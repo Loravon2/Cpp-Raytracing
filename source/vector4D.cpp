@@ -1,9 +1,9 @@
 #include <vector4D.hpp>
 
-vector4D::vector4D(double x, double y, double z, bool type): vector3D({x, y, z}), vectorType(type) {}
-vector4D::vector4D(): vector4D(0, 0, 0, 1) {}
+Vector4D::Vector4D(double x, double y, double z, bool type): vector3D({x, y, z}), vectorType(type) {}
+Vector4D::Vector4D(): Vector4D(0, 0, 0, 1) {}
 
-void vector4D::operator+=(const vector4D& other) {
+void Vector4D::operator+=(const Vector4D& other) {
   if (this->pointVector() && other.pointVector()) {
     /* ERROR HANDLING, since this is bogus */
   }
@@ -13,7 +13,7 @@ void vector4D::operator+=(const vector4D& other) {
   this->z() += other.z();
 }
 
-void vector4D::operator-=(const vector4D& other) {
+void Vector4D::operator-=(const Vector4D& other) {
   if (this->directionVector() && other.pointVector()) {
     /* ERROR HANDLING, since this is bogus */
   }
@@ -24,17 +24,17 @@ void vector4D::operator-=(const vector4D& other) {
   this->vectorType -= other.vectorType;
 }
 
-const vector4D operator+ (vector4D u, const vector4D& v) {
+const Vector4D operator+ (Vector4D u, const Vector4D& v) {
   u += v;
   return u;
 }
 
-const vector4D operator- (vector4D u, const vector4D& v) {
+const Vector4D operator- (Vector4D u, const Vector4D& v) {
   u -= v;
   return u;
 }
 
-double operator* (const vector4D& u, const vector4D& v) {
+double operator* (const Vector4D& u, const Vector4D& v) {
   if (u.pointVector() || v.pointVector()) {
     /* ERROR HANDLING, since this is bogus */
   }
@@ -43,11 +43,11 @@ double operator* (const vector4D& u, const vector4D& v) {
   return p;
 }
 
-double vector4D::norm() const {
+double Vector4D::norm() const {
   return std::sqrt(*this * *this);
 }
 
-void vector4D::normalize() {
+void Vector4D::normalize() {
   double n = this->norm();
 
   if (-EPSILON < n && n < EPSILON) {
@@ -59,38 +59,38 @@ void vector4D::normalize() {
   this->z() /= n;
 }
 
-bool vector4D::unitary() const {
+bool Vector4D::unitary() const {
   return (-EPSILON < this->norm()) && (this->norm() < EPSILON);
 }
 
-bool vector4D::pointVector() const {
+bool Vector4D::pointVector() const {
   return vectorType;
 }
 
-bool vector4D::directionVector() const {
+bool Vector4D::directionVector() const {
   return !vectorType;
 }
 
-const double& vector4D::x() const {
+const double& Vector4D::x() const {
   return vector3D.at(0);
 }
 
-double& vector4D::x() {
+double& Vector4D::x() {
   return vector3D.at(0);
 }
 
-const double& vector4D::y() const {
+const double& Vector4D::y() const {
   return vector3D.at(1);
 }
 
-double& vector4D::y() {
+double& Vector4D::y() {
   return vector3D.at(1);
 }
 
-const double& vector4D::z() const {
+const double& Vector4D::z() const {
   return vector3D.at(2);
 }
 
-double& vector4D::z() {
+double& Vector4D::z() {
   return vector3D.at(2);
 }
