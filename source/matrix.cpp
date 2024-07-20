@@ -45,6 +45,17 @@ void TransformMatrix::operator*=(const TransformMatrix& other) {
   }
 }
 
+std::ostream& operator<<(std::ostream& stream, const TransformMatrix& A) {
+  for (size_t i = 0; i < 4; i++) {
+    for (size_t j = 0; j < 4; j++) {
+      stream << A.at(j, i) << " ";
+    }
+    stream << "\n";
+  } 
+
+  return stream;
+}
+
 const Vector4D operator*(const TransformMatrix& A, const Vector4D& v) {
   std::array <double, 4> res;
   for (size_t i = 0; i < 4; i++) {

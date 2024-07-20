@@ -3,6 +3,7 @@
 #include <array>
 #include <exception>
 #include <cmath>
+#include <iostream>
 
 #include <vector4D.hpp>
 #include "defines.h"
@@ -22,12 +23,14 @@ public:
   const Vector4D at(size_t i) const;
 
   void operator*=(const TransformMatrix& other);
+
+  friend std::ostream& operator<<(std::ostream& stream, const TransformMatrix& A);
 };
 
 const Vector4D operator*(const TransformMatrix& A, const Vector4D& v);
 const TransformMatrix operator*(TransformMatrix A, const TransformMatrix& B);
 
-class ScalingMatrix: TransformMatrix {
+class ScalingMatrix: public TransformMatrix {
 private:
   double ax;
   double ay;
@@ -39,7 +42,7 @@ public:
   void inverse() override;
 };
 
-class TranslationMatrix: TransformMatrix {
+class TranslationMatrix: public TransformMatrix {
 private:
   double tx;
   double ty;
@@ -51,7 +54,7 @@ public:
   void inverse() override;
 };
 
-class RotationMatrix: TransformMatrix {
+class RotationMatrix: public TransformMatrix {
 private:
   double theta;
   axis_t axis;
