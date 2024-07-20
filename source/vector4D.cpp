@@ -1,6 +1,7 @@
 #include <vector4D.hpp>
 
 Vector4D::Vector4D(double x, double y, double z, bool type): vector3D({x, y, z}), vectorType(type) {}
+Vector4D::Vector4D(std::array <double, 4> vec): Vector4D(vec.at(0), vec.at(1), vec.at(2), vec.at(3)) {}
 Vector4D::Vector4D(): Vector4D(0, 0, 0, 1) {}
 
 void Vector4D::operator+=(const Vector4D& other) {

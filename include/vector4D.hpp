@@ -11,6 +11,7 @@ private:
   bool vectorType;
 public:
   Vector4D(double x, double y, double z, bool type);
+  Vector4D(std::array <double, 4> vec);
   Vector4D();
 
   void operator+=(const Vector4D& other);
