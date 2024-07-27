@@ -6,12 +6,9 @@ INCLUDE := include
 DEF			:= defines
 EIGEN   := Eigen
 
-all: clean main.exe
+all: main.exe
 
 main.exe: main.cpp $(SRC)/*.cpp
-	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -I$(DEF) -I$(EIGEN) $^ -o $@
-
-test.exe: test.cpp $(SRC)/*.cpp
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -I$(DEF) -I$(EIGEN) $^ -o $@
 
 run: all
