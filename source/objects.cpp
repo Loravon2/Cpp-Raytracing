@@ -18,6 +18,10 @@ const IntersectionPoint operator*(const Eigen::Transform<float, 3, Eigen::Projec
 }
 
 
+bool BaseObject::intersect(const Ray& r, std::vector<IntersectionPoint>& dest) const {
+  return intersect(r, (Eigen::Transform<float, 3, Eigen::Projective>) Eigen::DiagonalMatrix<float, 3>(1, 1, 1), dest);
+}
+
 bool BaseObject::included(const Eigen::Vector3f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
   return included((Eigen::Vector4f) (point.homogeneous() - Eigen::Vector4f::UnitW()), inverse_transform);
 }
@@ -29,6 +33,30 @@ bool BaseObject::included(const Eigen::Vector4f& point) {
 bool BaseObject::included(const Eigen::Vector3f& point) {
   return included(point, (Eigen::Transform<float, 3, Eigen::Projective>) Eigen::DiagonalMatrix<float, 3>(1, 1, 1));
 }
+
+
+
+RootObject::RootObject(BaseObject* child): child(child) {}
+
+bool RootObject::intersect(const Ray& r, IntersectionPoint& dest) const {
+  std::vector<IntersectionPoint> intersection_points;
+
+  child->intersect(r, intersection_points);
+
+  if (intersection_points.empty()) return false;
+
+  std::sort(intersection_points.begin(), intersection_points.end());
+
+  dest = intersection_points.at(0);
+
+  return true;
+}
+
+bool RootObject::included(const Eigen::Vector4f& point) const {
+  return child->included(point);
+}
+
+
 
 Primitive::Primitive(ColData col, float index):
   col(col), index(index) 
@@ -109,22 +137,22 @@ bool HalfSpace::included(const Eigen::Vector4f& point, const Eigen::Transform<fl
   return normal.dot(modified - Eigen::Vector3f::Zero().homogeneous()) > 0;
 }
 
-Transformation Transformation::Scaling(BaseObject* child, float ax, float ay, float az) {
-  return Transformation(child, Eigen::DiagonalMatrix<float, 3>(ax, ay, az));
+Transformation* Transformation::Scaling(BaseObject* child, float ax, float ay, float az) {
+  return new Transformation(child, Eigen::DiagonalMatrix<float, 3>(ax, ay, az));
 }
 
-Transformation Transformation::Rotation_X(BaseObject* child, float alpha) {
-  return Transformation(child, Eigen::AngleAxis<float>(alpha, Eigen::Vector3f::UnitX()));
+Transformation* Transformation::Rotation_X(BaseObject* child, float alpha) {
+  return new Transformation(child, Eigen::AngleAxis<float>(alpha, Eigen::Vector3f::UnitX()));
 }
-Transformation Transformation::Rotation_Y(BaseObject* child, float alpha) {
-  return Transformation(child, Eigen::AngleAxis<float>(alpha, Eigen::Vector3f::UnitY()));
+Transformation* Transformation::Rotation_Y(BaseObject* child, float alpha) {
+  return new Transformation(child, Eigen::AngleAxis<float>(alpha, Eigen::Vector3f::UnitY()));
 }
-Transformation Transformation::Rotation_Z(BaseObject* child, float alpha) {
-  return Transformation(child, Eigen::AngleAxis<float>(alpha, Eigen::Vector3f::UnitZ()));
+Transformation* Transformation::Rotation_Z(BaseObject* child, float alpha) {
+  return new Transformation(child, Eigen::AngleAxis<float>(alpha, Eigen::Vector3f::UnitZ()));
 }
 
-Transformation Transformation::Translation(BaseObject* child, float dx, float dy, float dz) {
-  return Transformation(child, Eigen::Translation<float, 3>(dx, dy, dz));
+Transformation* Transformation::Translation(BaseObject* child, float dx, float dy, float dz) {
+  return new Transformation(child, Eigen::Translation<float, 3>(dx, dy, dz));
 }
 
 Transformation::Transformation(BaseObject* child, Eigen::DiagonalMatrix<float, 3> scaling): child(child), transformation(scaling), inverse(scaling.inverse()) {}

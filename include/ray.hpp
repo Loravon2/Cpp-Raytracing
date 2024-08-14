@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Dense>
-#include <defines.h>
+#include "defines.h"
 
 class Ray {
 private:

@@ -32,11 +32,26 @@ const IntersectionPoint operator*(const Eigen::Transform<float, 3, Eigen::Projec
 class BaseObject {
 public:
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const = 0;
+  bool intersect(const Ray& r, std::vector<IntersectionPoint>& dest) const;
 
   virtual bool included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const = 0;
   bool included(const Eigen::Vector3f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const;
   bool included(const Eigen::Vector4f& point);
   bool included(const Eigen::Vector3f& point);
+};
+
+
+
+class RootObject {
+private:
+  BaseObject* child;
+public:
+  RootObject(BaseObject* child);
+  RootObject() = delete;
+
+  bool intersect(const Ray& r, IntersectionPoint& dest) const;
+
+  bool included(const Eigen::Vector4f& point) const;
 };
 
 
@@ -84,13 +99,13 @@ private:
   Eigen::Transform<float, 3, Eigen::Projective> inverse;
 
 public:
-  static Transformation Scaling(BaseObject* child, float ax, float ay, float az);
+  static Transformation* Scaling(BaseObject* child, float ax, float ay, float az);
 
-  static Transformation Rotation_X(BaseObject* child, float alpha);
-  static Transformation Rotation_Y(BaseObject* child, float alpha);
-  static Transformation Rotation_Z(BaseObject* child, float alpha);
+  static Transformation* Rotation_X(BaseObject* child, float alpha);
+  static Transformation* Rotation_Y(BaseObject* child, float alpha);
+  static Transformation* Rotation_Z(BaseObject* child, float alpha);
 
-  static Transformation Translation(BaseObject* child, float dx, float dy, float dz);
+  static Transformation* Translation(BaseObject* child, float dx, float dy, float dz);
 
   Transformation(BaseObject* child, Eigen::DiagonalMatrix<float, 3> scaling);
   Transformation(BaseObject* child, Eigen::AngleAxis<float> rotation);
