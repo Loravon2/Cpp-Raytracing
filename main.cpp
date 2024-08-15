@@ -9,9 +9,14 @@
 int main() {
   
   HalfSpace* H = new HalfSpace();
-  Transformation* rot = Transformation::Rotation_X(H, M_PI_2);
+  Transformation* rot = Transformation::Rotation_X(H, -M_PI_2);
 
-  RootObject* R = new RootObject(rot);
+  Sphere* Sph = new Sphere();
+  Transformation* trans = Transformation::Translation(Sph, 1, 1, 0);
+
+  Union* U = new Union(rot, trans);
+
+  RootObject* R = new RootObject(U);
 
   Eigen::Vector3f S(1, 1, 0);
   Eigen::Vector3f d(sqrtf(2)/2, -sqrtf(2)/2, 0);
@@ -20,7 +25,7 @@ int main() {
 
   IntersectionPoint P;
   if (R->intersect(r, P)) {
-    std::cout << P.point << std::endl;
+    std::cout << P.point << "\n\n" << P.normal << "\n\n" << P.distance << std::endl;
   }
   else {
     std::cout << "NO INTERSECTION" << std::endl;

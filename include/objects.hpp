@@ -1,5 +1,6 @@
 #pragma once
  
+#include <iostream> //probably remove later 
 #include <vector>
 #include <tuple>
 #include <array>
@@ -114,6 +115,9 @@ public:
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const override;
 
   virtual bool included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const override;
+
+  const Eigen::Transform<float, 3, Eigen::Projective>& matrix() const;
+  const Eigen::Transform<float, 3, Eigen::Projective>& inverse_matrix() const;
 };
 
 

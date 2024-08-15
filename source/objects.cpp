@@ -79,7 +79,7 @@ Sphere::Sphere():
 bool Sphere::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
   Ray modified = inverse_transform * r;
 
-  Eigen::Vector4f lot = Eigen::Vector3f::Zero().homogeneous() - modified.start_point();
+  Eigen::Vector4f lot = modified.start_point() - Eigen::Vector3f::Zero().homogeneous() ;
   float dot = modified.direction().dot(lot);
   float delta = 1 + dot*dot - lot.norm() * lot.norm();
 
@@ -162,10 +162,12 @@ Transformation::Transformation(BaseObject* child, Eigen::Translation<float, 3> t
 bool Transformation::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
   Eigen::Transform<float, 3, Eigen::Projective> new_inverse_transform = inverse * inverse_transform;
 
-  bool found = child->intersect(r, new_inverse_transform, dest);
+  std::vector<IntersectionPoint> intersection_points;
 
-  for (IntersectionPoint& p : dest) {
-    p = transformation * p;
+  bool found = child->intersect(r, new_inverse_transform, intersection_points);
+
+  for (IntersectionPoint& p : intersection_points) {
+    dest.push_back(transformation * p);
   }
 
   return found;
@@ -177,6 +179,15 @@ bool Transformation::included(const Eigen::Vector4f& point, const Eigen::Transfo
   return child->included(point, new_inverse);
 }
 
+const Eigen::Transform<float, 3, Eigen::Projective>& Transformation::matrix() const {
+  return transformation;
+}
+
+const Eigen::Transform<float, 3, Eigen::Projective>& Transformation::inverse_matrix() const {
+  return inverse;
+}
+
+
 
 Combination::Combination(BaseObject* O1, BaseObject* O2): O1(O1), O2(O2) {}
 
@@ -184,9 +195,10 @@ Combination::Combination(BaseObject* O1, BaseObject* O2): O1(O1), O2(O2) {}
 Union::Union(BaseObject* O1, BaseObject* O2): Combination(O1, O2) {}
 
 bool Union::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
-  bool found = O1->intersect(r, inverse_transform, dest);
-  found = O2->intersect(r, inverse_transform, dest) || found;
-  return found;
+  bool found1 = O1->intersect(r, inverse_transform, dest);
+  bool found2 = O2->intersect(r, inverse_transform, dest);
+
+  return found1 || found2;
 }
 
 bool Union::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
