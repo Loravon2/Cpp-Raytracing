@@ -1,35 +1,35 @@
 #include <iostream>
 #include <Dense>
 
-#include "ray.hpp"
+#include <ray.hpp>
+#include <objects.hpp>
+#include "math.h"
 #include "defines.h"
 
 int main() {
-  //Eigen example
-  Eigen::DiagonalMatrix<float, 3> A(4.5, 3.2, 1.1);
-  Eigen::AngleAxis<float> B(2.1, Eigen::Vector3f::UnitX());
+  
+  HalfSpace* H = new HalfSpace();
+  Transformation* rot = Transformation::Rotation_X(H, -M_PI_2);
 
-  Eigen::Transform<float, 3, Eigen::Projective> C = (Eigen::DiagonalMatrix<float, 3>) A.inverse().diagonal() * B.inverse();
+  Sphere* Sph = new Sphere();
+  Transformation* trans = Transformation::Translation(Sph, 1, 1, 0);
 
-  Eigen::Translation<float, 3> D(2.1, 1.2, 3.0);
-  C *= D.inverse();
+  Union* U = new Union(rot, trans);
 
-  //std::cout << C.matrix() << std::endl;
+  RootObject* R = new RootObject(U);
 
-  //Ray example
-  Eigen::Vector3f S(-1, 1, 1), P(0, 0, 0);
-  Eigen::Vector3f d(1, -1, 0), normal(0, 1, 0);
-  Ray r(S, d);
+  Eigen::Vector3f S(1, 1, 0);
+  Eigen::Vector3f d(sqrtf(2)/2, -sqrtf(2)/2, 0);
 
-  std::cout << r.get_S() << "\n" << r.get_d() << "\n\n\n";
+  Ray r(S, d, 1.0);
 
-  Ray t = r.reflect(P, normal);
-
-  std::cout << t.get_S() << "\n" << t.get_d() << std::endl;
-
-  Ray f = r.refract(P, normal, 1.0, 2.3);
-
-  std::cout << f.get_S() << "\n" << f.get_d() << std::endl; 
+  IntersectionPoint P;
+  if (R->intersect(r, P)) {
+    std::cout << P.point << "\n\n" << P.normal << "\n\n" << P.distance << std::endl;
+  }
+  else {
+    std::cout << "NO INTERSECTION" << std::endl;
+  }
 
   return 0;
 }
