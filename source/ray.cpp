@@ -1,11 +1,40 @@
 #include <ray.hpp>
 
-Ray::Ray(Eigen::Vector4f S, Eigen::Vector4f d): S(S), d(d.normalized()) {
-  eigen_assert(S[3] == 1);
-  eigen_assert(d[3] == 0); // could use warnings instead and correct mistake
+
+
+
+// with exception and error handling:
+
+Ray::Ray(Eigen::Vector4f S, Eigen::Vector4f d, float n): S(S), d(d.normalized()), n(n) {
+  
+  //correct S[3]
+  try {
+    if (S[3] != 1) {
+        throw std::invalid_argument("The fourth coordinate of S must be 1");
+    }
+  } catch (const std::invalid_argument& e) {
+    std::cerr << "Error: " << e.what() << " - Correcting S[3] to 1." << std::endl;
+    S[3] = 1;
+    }
+
+  try {
+    if (d[3] != 0) {
+        throw std::invalid_argument("The fourth coordinate of d must be 0");
+    }
+  } catch (const std::invalid_argument& e) {
+    std::cerr << "Error: " << e.what() << " - Correcting d[3] to 0." << std::endl;
+    d[3] = 0;
+    }
+  
 }
 
+
 Ray::Ray(Eigen::Vector3f S, Eigen::Vector3f d): Ray((Eigen::Vector4f) S.homogeneous(), d.homogeneous() - Eigen::Vector4f::UnitW()) {}
+
+
+
+Ray::Ray(Eigen::Vector3f S, Eigen::Vector3f d, float n): Ray((Eigen::Vector4f) S.homogeneous(), d.homogeneous() - Eigen::Vector4f::UnitW(), n) {}
+
 
 Ray::Ray(float sx, float sy, float sz, float dx, float dy, float dz): Ray(Eigen::Vector3f(sx, sy, sz), Eigen::Vector3f(dx, dy, dz)) {}
 
