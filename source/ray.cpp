@@ -31,11 +31,6 @@ Ray::Ray(Eigen::Vector4f S, Eigen::Vector4f d, float n): S(S), d(d.normalized())
 
 Ray::Ray(Eigen::Vector3f S, Eigen::Vector3f d): Ray((Eigen::Vector4f) S.homogeneous(), d.homogeneous() - Eigen::Vector4f::UnitW()) {}
 
-
-
-Ray::Ray(Eigen::Vector3f S, Eigen::Vector3f d, float n): Ray((Eigen::Vector4f) S.homogeneous(), d.homogeneous() - Eigen::Vector4f::UnitW(), n) {}
-
-
 Ray::Ray(float sx, float sy, float sz, float dx, float dy, float dz): Ray(Eigen::Vector3f(sx, sy, sz), Eigen::Vector3f(dx, dy, dz)) {}
 
 Ray::Ray(): Ray(0, 0, 0, 1, 0, 0) {}

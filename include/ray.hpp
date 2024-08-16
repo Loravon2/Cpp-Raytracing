@@ -1,8 +1,8 @@
 #pragma once
-
+#include <iostream>
 #include <Dense>
 #include <defines.h>
-#include <iostream>
+
 
 class Ray {
 private:
