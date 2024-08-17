@@ -1,8 +1,5 @@
 #include <ray.hpp>
 
-
-
-
 // with exception and error handling:
 
 Ray::Ray(Eigen::Vector4f S, Eigen::Vector4f d, float n): S(S), d(d.normalized()), n(n) {
@@ -15,7 +12,7 @@ Ray::Ray(Eigen::Vector4f S, Eigen::Vector4f d, float n): S(S), d(d.normalized())
   } catch (const std::invalid_argument& e) {
     std::cerr << "Error: " << e.what() << " - Correcting S[3] to 1." << std::endl;
     S[3] = 1;
-    }
+   }
 
   try {
     if (d[3] != 0) {
