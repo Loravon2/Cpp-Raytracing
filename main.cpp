@@ -3,11 +3,11 @@
 
 #include <ray.hpp>
 #include <objects.hpp>
+#include <light.hpp>
 #include "math.h"
 #include "defines.h"
 
 int main() {
-  
   HalfSpace* H = new HalfSpace();
   Transformation* rot = Transformation::Rotation_X(H, -M_PI_2);
 
@@ -30,6 +30,15 @@ int main() {
   else {
     std::cout << "NO INTERSECTION" << std::endl;
   }
+
+
+  LightIntensity li(0.2,0.5,0.3);
+  std::cout << li << "\n";
+
+  LightIntensity li2(0.7,0.12,0.5);
+
+  LightIntensity li3 = li + li2;
+  std::cout << li3 << std::endl;
 
   return 0;
 }

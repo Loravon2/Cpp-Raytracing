@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Mac dSYM/ folders
+*.dSYM
+
+# VScode
+*.vscode
