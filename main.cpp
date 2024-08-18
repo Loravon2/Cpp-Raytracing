@@ -30,12 +30,15 @@ int main() {
   else {
     std::cout << "NO INTERSECTION" << std::endl;
   }
+
+
   LightIntensity li(0.2,0.5,0.3);
-  li.print();
+  std::cout << li << "\n";
 
   LightIntensity li2(0.7,0.12,0.5);
 
   LightIntensity li3 = li + li2;
-  li3.print();
+  std::cout << li3 << std::endl;
+
   return 0;
 }
