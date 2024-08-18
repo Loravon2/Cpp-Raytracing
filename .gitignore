@@ -33,3 +33,6 @@
 
 # Mac dSYM/ folders
 *.dSYM
+
+# VScode
+*.vscode
