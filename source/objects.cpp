@@ -38,7 +38,7 @@ bool BaseObject::included(const Eigen::Vector3f& point) {
 
 RootObject::RootObject(BaseObject* child): child(child) {}
 
-bool RootObject::intersect(const Ray& r, IntersectionPoint& dest) const {
+bool RootObject::intersect(const Ray& r, IntersectionPoint* dest) const {
   std::vector<IntersectionPoint> intersection_points;
 
   child->intersect(r, intersection_points);
@@ -47,7 +47,9 @@ bool RootObject::intersect(const Ray& r, IntersectionPoint& dest) const {
 
   std::sort(intersection_points.begin(), intersection_points.end());
 
-  dest = intersection_points.at(0);
+  if (dest != nullptr) {
+    *dest = intersection_points.at(0);
+  }
 
   return true;
 }

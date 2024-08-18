@@ -21,8 +21,10 @@ public:
   const Ray reflect(const Eigen::Vector4f& P, Eigen::Vector4f normal) const;
   const Ray reflect(const Eigen::Vector3f& P, const Eigen::Vector3f& normal) const;
 
-  const Ray refract(const Eigen::Vector4f& P, Eigen::Vector4f normal, float n2);
-  const Ray refract(const Eigen::Vector3f& P, const Eigen::Vector3f& normal, float n2);
+  const Ray refract(const Eigen::Vector4f& P, Eigen::Vector4f normal, float n2) const;
+  const Ray refract(const Eigen::Vector3f& P, const Eigen::Vector3f& normal, float n2) const;
+
+  const Ray operator-() const;
 };
 
 const Ray operator*(const Eigen::Transform<float, 3, Eigen::Projective>& T, const Ray& r);

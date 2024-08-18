@@ -24,7 +24,7 @@ int main() {
   Ray r(S, d, 1.0);
 
   IntersectionPoint P;
-  if (R->intersect(r, P)) {
+  if (R->intersect(r, &P)) {
     std::cout << P.point << "\n\n" << P.normal << "\n\n" << P.distance << std::endl;
   }
   else {

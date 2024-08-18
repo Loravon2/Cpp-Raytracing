@@ -50,7 +50,7 @@ public:
   RootObject(BaseObject* child);
   RootObject() = delete;
 
-  bool intersect(const Ray& r, IntersectionPoint& dest) const;
+  bool intersect(const Ray& r, IntersectionPoint* dest = nullptr) const;
 
   bool included(const Eigen::Vector4f& point) const;
 };

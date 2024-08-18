@@ -39,7 +39,7 @@ const Ray Ray::reflect(const Eigen::Vector3f& P, const Eigen::Vector3f& normal) 
 }
 
 
-const Ray Ray::refract(const Eigen::Vector4f& P, Eigen::Vector4f normal, float n2) {
+const Ray Ray::refract(const Eigen::Vector4f& P, Eigen::Vector4f normal, float n2) const {
   eigen_assert(P[3] == 1);
   eigen_assert(normal[3] == 0);
 
@@ -47,10 +47,17 @@ const Ray Ray::refract(const Eigen::Vector4f& P, Eigen::Vector4f normal, float n
   return Ray(P, n / n2 * (d - (d.dot(normal) + sqrtf((n2 / n) * (n2 / n) + d.dot(normal) * d.dot(normal) - 1)) * normal), n2);
 }
 
-const Ray Ray::refract(const Eigen::Vector3f& P, const Eigen::Vector3f& normal, float n2) {
+const Ray Ray::refract(const Eigen::Vector3f& P, const Eigen::Vector3f& normal, float n2) const {
   Eigen::Vector4f normalH = normal.homogeneous();
   normalH[3] = 0;
   return refract(P.homogeneous(), normalH, n2);
+}
+
+
+const Ray Ray::operator-() const {
+  Ray r(this->S, -this->d, this->n);
+
+  return r;
 }
 
 
