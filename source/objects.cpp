@@ -81,21 +81,33 @@ Sphere::Sphere():
 bool Sphere::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
   Ray modified = inverse_transform * r;
 
-  Eigen::Vector4f lot = modified.start_point() - Eigen::Vector3f::Zero().homogeneous() ;
+  Eigen::Vector4f lot =  Eigen::Vector3f::Zero().homogeneous() - modified.start_point();
   float dot = modified.direction().dot(lot);
   float delta = 1 + dot*dot - lot.norm() * lot.norm();
 
   if (delta < 0) return false;
 
+  bool found = false;
+
   std::array<float, 2> t_arr = {dot + sqrtf(delta), dot - sqrtf(delta)};
   for (float t : t_arr) {
     if (t > 0) {
       Eigen::Vector4f P = modified.start_point() + t * modified.direction();
-      dest.push_back(IntersectionPoint(P, P - Eigen::Vector3f::Zero().homogeneous(), col, index, t));
+      Eigen::Vector4f normal = P - Eigen::Vector3f::Zero().homogeneous();
+
+      float refr_index = index;
+
+      if (this->included(r.start_point(), inverse_transform)) {
+        normal *= -1.0;
+        refr_index = 1.0; //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
+      }
+
+      dest.push_back(IntersectionPoint(P, normal, col, refr_index, t));
+      found = true;
     }
   }
 
-  return true;
+  return found;
 }
 
 bool Sphere::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
@@ -123,12 +135,17 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
   if (normal.dot(modified.direction()) == 0) return false;
 
   float t = normal.dot(modified.start_point() - Eigen::Vector3f::Zero().homogeneous()) / normal.dot(modified.direction());
-
-  if (t > 0) return false;
+  
+  if (t >= 0) return false;
 
   Eigen::Vector4f P = modified.start_point() - t * modified.direction();
 
-  dest.push_back(IntersectionPoint(P, normal, col, index, -t));
+  if (this->included(r.start_point(), inverse_transform)) {
+    dest.push_back(IntersectionPoint(P, normal, col, 1.0, -t)); //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
+  }
+  else {
+    dest.push_back(IntersectionPoint(P, -normal, col, index, -t));
+  }
 
   return true;
 }

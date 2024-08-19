@@ -15,6 +15,8 @@ public:
   LightIntensity(float red, float green, float blue);
   LightIntensity();
 
+  float at(unsigned k);
+
   void operator+=(const LightIntensity& other);
   friend const LightIntensity operator+(LightIntensity l1, const LightIntensity& l2);
   

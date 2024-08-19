@@ -2,11 +2,14 @@
 
 #include <vector>
 #include <iostream>
+#include "math.h"
 #include <Eigen>
+#include <opencv2/opencv.hpp>
 
 #include <objects.hpp>
 #include <light.hpp>
 #include <ray.hpp>
+#include "defines.h"
 
 class Scene {
 private:
@@ -34,5 +37,5 @@ public:
         std::vector<LightSource*> sources, RootObject* objects);
   Scene();
 
-
+  cv::Mat_<cv::Vec3b> generate();
 };
