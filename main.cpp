@@ -50,33 +50,50 @@ int main() {
 
 
   //Thomas Example
-  Sphere* Sphere1 = new Sphere(red_flat, 4);
-  Transformation* trans1 = Transformation::Translation(Sphere1, 1, 1, 4);
+  // Sphere* Sphere1 = new Sphere(red_flat, 4);
+  // Transformation* trans1 = Transformation::Translation(Sphere1, 1, 1, 4);
 
-  HalfSpace* Half1 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 0, -1, 0));
-  Transformation* trans2 = Transformation::Translation(Half1, 0, 0, 7);
+  // HalfSpace* Half1 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 0, -1, 0));
+  // Transformation* trans2 = Transformation::Translation(Half1, 0, 0, 7);
 
-  HalfSpace* Half2 = new HalfSpace(mirror_blue, 1, Eigen::Vector4f(1, 0, 0, 0));
+  // HalfSpace* Half2 = new HalfSpace(mirror_blue, 1, Eigen::Vector4f(1, 0, 0, 0));
 
-  HalfSpace* Half3 = new HalfSpace(mirror_green, 1, Eigen::Vector4f(-1, 0, 0, 0));
-  Transformation* trans3 = Transformation::Translation(Half3, 3, 0, 0);
+  // HalfSpace* Half3 = new HalfSpace(mirror_green, 1, Eigen::Vector4f(-1, 0, 0, 0));
+  // Transformation* trans3 = Transformation::Translation(Half3, 3, 0, 0);
 
-  HalfSpace* Half4 = new HalfSpace(mirror_purple, 1, Eigen::Vector4f(0, -1, 0, 0));
-  Transformation* trans4 = Transformation::Translation(Half4, 0, 3, 0);
+  // HalfSpace* Half4 = new HalfSpace(mirror_purple, 1, Eigen::Vector4f(0, -1, 0, 0));
+  // Transformation* trans4 = Transformation::Translation(Half4, 0, 3, 0);
 
-  HalfSpace* Half5 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 0, 1, 0));
-  Transformation* trans5 = Transformation::Translation(Half5, 0, 0, -3);
+  // HalfSpace* Half5 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 0, 1, 0));
+  // Transformation* trans5 = Transformation::Translation(Half5, 0, 0, -3);
 
-  HalfSpace* Half6 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 1, 0, 0));
+  // HalfSpace* Half6 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 1, 0, 0));
 
-  Union* union1 = new Union({trans1, trans2, Half2, trans3, trans4, trans5, Half6});
+  // Union* union1 = new Union({trans1, trans2, Half2, trans3, trans4, trans5, Half6});
 
-  RootObject* root = new RootObject(union1);
+  // RootObject* root = new RootObject(union1);
 
-  LightSource* source1 = new LightSource(Eigen::Vector4f(1.5, 1, -2, 1), white);
+  // LightSource* source1 = new LightSource(Eigen::Vector4f(1.5, 1, -2, 1), white);
 
-  Scene scene(32, 3, 2, Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1.5, 1, -2, 1),
-              LightIntensity(0.1, 0.1, 0.1), 1, 5, {source1}, root);
+  // Scene scene(32, 3, 2, Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1.5, 1, -2, 1),
+  //             LightIntensity(0.1, 0.1, 0.1), 1, 5, {source1}, root);
+
+
+  //Intersecting Spheres
+  Sphere* Sphere1 = new Sphere(red_flat, 1);
+  Sphere* Sphere2 = new Sphere(mirror_green, 1);
+
+  Transformation* Trans1 = Transformation::Translation(Sphere2, 1.0 / sqrtf(3), 1.0 / sqrtf(3), -1.0 / sqrtf(3));
+  Transformation* Scal1 = Transformation::Scaling(Trans1, 2, 2, 2);
+
+  Subtraction* Sub1 = new Subtraction({Sphere1, Scal1});
+
+  LightSource* source1 = new LightSource(Eigen::Vector4f(0, 5, 0, 1), white);
+
+  RootObject* root = new RootObject(Sub1);
+
+  Scene scene(128, 3, 2, Eigen::Vector4f(-1.5, -1, -2, 1), Eigen::Vector4f(0, 0, -4, 1), 
+              LightIntensity(0.3, 0.3, 0.3), 1, 5, {source1}, root);
 
   std::cout << "starting:\n";
 

@@ -256,25 +256,26 @@ bool Union::included(const Eigen::Vector4f& point, const Eigen::Transform<float,
 Intersection::Intersection(std::vector<BaseObject*> objects): Combination(objects) {}
 
 bool Intersection::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
-  if (objects.empty()) {
-    return false;
-  }
-
-  std::vector<IntersectionPoint> O1_points;
-  objects[0]->intersect(r, inverse_transform, O1_points);
-
   bool found = false;
-  for (IntersectionPoint& p : O1_points) {
-    bool available = true;
 
-    for (BaseObject* O : objects) {
-      if (!O->included(p.point, inverse_transform)) {
-        available = false;
+  for (BaseObject* O1 : objects) {
+    std::vector<IntersectionPoint> O1_points;
+    O1->intersect(r, inverse_transform, O1_points);
+
+    for (IntersectionPoint& p : O1_points) {
+      bool available = true;
+
+      for (BaseObject* O2 : objects) {
+        if (!O2->included(p.point, inverse_transform)) {
+          available = false;
+          break;
+        }
       }
-    }
-    if (available) {
-      dest.push_back(p);
-      found = true;
+
+      if (available) {
+        dest.push_back(p);
+        found = true;
+      }
     }
   }
 
@@ -375,6 +376,22 @@ bool Subtraction::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen
     if (available) {
       found = true;
       dest.push_back(p);
+    }
+  }
+
+  for (BaseObject* O2 : objects) {
+    if (objects[0] == O2) {
+      continue;
+    }
+
+    std::vector<IntersectionPoint> O2_points;
+    O2->intersect(r, inverse_transform, O2_points);
+
+    for (IntersectionPoint p : O2_points) {
+      if (objects[0]->included(p.point, inverse_transform)) {
+        found = true;
+        dest.push_back(p);
+      }
     }
   }
 
