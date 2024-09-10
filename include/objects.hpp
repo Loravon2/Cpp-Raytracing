@@ -152,6 +152,7 @@ public:
 };
 
 class Intersection: public Combination {
+public:
   Intersection(std::vector<BaseObject*> objects);
   Intersection() = delete;
 
@@ -161,6 +162,7 @@ class Intersection: public Combination {
 };
 
 class Exclusion: public Combination {
+public:
   Exclusion(std::vector<BaseObject*> objects);
   Exclusion() = delete;
 
@@ -170,6 +172,7 @@ class Exclusion: public Combination {
 };
 
 class Subtraction: public Combination {
+public:
   Subtraction(std::vector<BaseObject*> objects);
   Subtraction() = delete;
 
