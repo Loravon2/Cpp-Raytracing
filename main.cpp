@@ -19,6 +19,7 @@ int main() {
 
   ColData shiny(white, white, white, white, white, 1);
   ColData red_flat(red, red, red, red, black, 2);
+  ColData reflective_black(black, black, white * 0.2, white * 0.2, black, 3);
   ColData mirror(black, black, white, white, black, 4);
   ColData mirror_blue(black, black, blue, blue, black, 4);
   ColData mirror_green(black, black, green, green, black, 4);
@@ -63,17 +64,24 @@ int main() {
   HalfSpace* Half4 = new HalfSpace(mirror_purple, 1, Eigen::Vector4f(0, -1, 0, 0));
   Transformation* trans4 = Transformation::Translation(Half4, 0, 3, 0);
 
+  HalfSpace* Half5 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 0, 1, 0));
+  Transformation* trans5 = Transformation::Translation(Half5, 0, 0, -3);
+
+  HalfSpace* Half6 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 1, 0, 0));
+
   Union* union1 = new Union(trans1, trans2);
   Union* union2 = new Union(union1, Half2);
   Union* union3 = new Union(union2, trans3);
   Union* union4 = new Union(union3, trans4);
+  Union* union5 = new Union(union4, trans5);
+  Union* union6 = new Union(union5, Half6);
 
-  RootObject* root = new RootObject(union4);
+  RootObject* root = new RootObject(union6);
 
   LightSource* source1 = new LightSource(Eigen::Vector4f(1.5, 1, -2, 1), white);
 
-  Scene scene(256, 3, 2, Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1.5, 1, -2, 1),
-              LightIntensity(0.1, 0.1, 0.1), 1, 10, {source1}, root);
+  Scene scene(128, 3, 2, Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1.5, 1, -2, 1),
+              LightIntensity(0.1, 0.1, 0.1), 1, 5, {source1}, root);
 
   std::cout << "starting:\n";
 

@@ -1,6 +1,5 @@
 #include <scene.hpp>
 
-
 Scene::Scene(float dpi, float width, float height,
             Eigen::Vector4f position, Eigen::Vector4f observer,
             LightIntensity ambient_light, float index,
@@ -19,8 +18,6 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) const {
     return LightIntensity();
   }
 
-  //std::cout << "\nIntersection:\n" << ip.point << "\n\n" << ip.normal << "\n\n";
-
   ColData texture = ip.color;
 
   LightIntensity value = texture.ambient * ambient_light;
@@ -32,7 +29,6 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) const {
       continue;
     }
 
-    //std::cout << "dot_product: " << light_dir.dot(ip.normal) << "\n";
     if (light_dir.dot(ip.normal) < 0) {
       continue; // the light source lies in the shadow of the object we just hit
     }
@@ -43,8 +39,6 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) const {
     if (objects->intersect(light_connection, &light_ip) && light_ip.distance < light_dir.norm()) {
       continue;
     }
-
-    //std::cout << "Light Connection:\n" << light_connection.direction() << "\n\n";
 
     Ray light_reflection = (-light_connection).reflect(ip.point, ip.normal);
 
