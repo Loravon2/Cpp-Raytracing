@@ -75,7 +75,7 @@ int main() {
 
   LightSource* source1 = new LightSource(Eigen::Vector4f(1.5, 1, -2, 1), white);
 
-  Scene scene(128, 3, 2, Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1.5, 1, -2, 1),
+  Scene scene(32, 3, 2, Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1.5, 1, -2, 1),
               LightIntensity(0.1, 0.1, 0.1), 1, 5, {source1}, root);
 
   std::cout << "starting:\n";

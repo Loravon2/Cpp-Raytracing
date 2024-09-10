@@ -34,9 +34,14 @@ bool BaseObject::included(const Eigen::Vector3f& point) {
   return included(point, (Eigen::Transform<float, 3, Eigen::Projective>) Eigen::DiagonalMatrix<float, 3>(1, 1, 1));
 }
 
-
+BaseObject::~BaseObject() {}
 
 RootObject::RootObject(BaseObject* child): child(child) {}
+
+RootObject::~RootObject() {
+  std::cout << "Destructing Root Object at " << this << std::endl;
+  delete child;
+}
 
 bool RootObject::intersect(const Ray& r, IntersectionPoint* dest) const {
   std::vector<IntersectionPoint> intersection_points;
@@ -68,6 +73,9 @@ Primitive::Primitive():
   Primitive(ColData(), 1.0)
   {}
 
+Primitive::~Primitive() {
+  std::cout << "Destructing Primitive at " << this << std::endl;
+}
 
 
 Sphere::Sphere(ColData col, float index):
@@ -178,6 +186,11 @@ Transformation::Transformation(BaseObject* child, Eigen::DiagonalMatrix<float, 3
 Transformation::Transformation(BaseObject* child, Eigen::AngleAxis<float> rotation): child(child), transformation(rotation), inverse(rotation.inverse()) {}
 Transformation::Transformation(BaseObject* child, Eigen::Translation<float, 3> translation): child(child), transformation(translation), inverse(translation.inverse()) {}
 
+Transformation::~Transformation() {
+  std::cout << "Destructing Transformation at " << this << std::endl;
+  delete child;
+}
+
 bool Transformation::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
   Eigen::Transform<float, 3, Eigen::Projective> new_inverse_transform = inverse * inverse_transform;
 
@@ -210,6 +223,12 @@ const Eigen::Transform<float, 3, Eigen::Projective>& Transformation::inverse_mat
 
 Combination::Combination(std::vector<BaseObject*> objects): objects(objects) {}
 
+Combination::~Combination() {
+  std::cout << "Destructing Combination at " << this << std::endl;
+  for (BaseObject* O : objects) {
+    delete O;
+  }
+}
 
 Union::Union(std::vector<BaseObject*> objects): Combination(objects) {}
 

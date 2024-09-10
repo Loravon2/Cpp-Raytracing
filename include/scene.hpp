@@ -37,5 +37,7 @@ public:
         std::vector<LightSource*> sources, RootObject* objects);
   Scene();
 
+  ~Scene();
+
   cv::Mat_<cv::Vec3b> generate();
 };

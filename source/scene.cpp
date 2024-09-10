@@ -10,6 +10,17 @@ Scene::Scene(float dpi, float width, float height,
           sources(sources), objects(objects)
           {}
 
+Scene::~Scene() {
+  std::cout << "Destructing Scene at " << this << std::endl;
+
+  for (LightSource* source : sources) {
+    delete source;
+  }
+
+  delete objects;
+}
+
+
 
 LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) const {
   IntersectionPoint ip;

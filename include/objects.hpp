@@ -32,6 +32,8 @@ const IntersectionPoint operator*(const Eigen::Transform<float, 3, Eigen::Projec
 
 class BaseObject {
 public:
+  virtual ~BaseObject();
+
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const = 0;
   bool intersect(const Ray& r, std::vector<IntersectionPoint>& dest) const;
 
@@ -50,6 +52,8 @@ public:
   RootObject(BaseObject* child);
   RootObject() = delete;
 
+  ~RootObject();
+
   bool intersect(const Ray& r, IntersectionPoint* dest = nullptr) const;
 
   bool included(const Eigen::Vector4f& point) const;
@@ -65,6 +69,8 @@ protected:
 public:
   Primitive(ColData col, float index);
   Primitive();
+
+  virtual ~Primitive();
 };
 
 class Sphere: public Primitive {
@@ -99,6 +105,8 @@ private:
   Eigen::Transform<float, 3, Eigen::Projective> transformation;
   Eigen::Transform<float, 3, Eigen::Projective> inverse;
 
+  virtual ~Transformation();
+
 public:
   static Transformation* Scaling(BaseObject* child, float ax, float ay, float az);
 
@@ -129,6 +137,8 @@ protected:
 public:
   Combination(std::vector<BaseObject*> objects);
   Combination() = delete;
+
+  virtual ~Combination();
 };
 
 class Union: public Combination {

@@ -52,6 +52,8 @@ public:
   LightSource(const Eigen::Vector3f& position, const LightIntensity& intensity);
   LightSource();
 
+  ~LightSource();
+
   const LightIntensity& rgb() const;
   const Eigen::Vector4f& pos() const;
 };
