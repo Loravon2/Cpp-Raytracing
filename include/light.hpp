@@ -2,20 +2,9 @@
 
 #include <iostream>
 #include <array>
+#include <Eigen>
 
 #include "defines.h"
-
-struct ColData {
-  std::array<float, NUM_COL> ambient;
-  std::array<float, NUM_COL> diffuse;
-  std::array<float, NUM_COL> specular;
-  std::array<float, NUM_COL> reflected;
-  std::array<float, NUM_COL> refracted;
-  float shininess;
-
-  ColData(std::array<float, NUM_COL> ambient, std::array<float, NUM_COL> diffuse, std::array<float, NUM_COL> specular, std::array<float, NUM_COL> reflected, std::array<float, NUM_COL> refracted, float shininess);
-  ColData();
-};
 
 class LightIntensity {
 private:
@@ -26,8 +15,45 @@ public:
   LightIntensity(float red, float green, float blue);
   LightIntensity();
 
-  void operator+=(const LightIntensity& l2);
+  float at(unsigned k);
+
+  void operator+=(const LightIntensity& other);
   friend const LightIntensity operator+(LightIntensity l1, const LightIntensity& l2);
   
+  void operator*=(const LightIntensity& other);
+  friend const LightIntensity operator*(LightIntensity l1, const LightIntensity& l2);
+
+  void operator*=(float scalar);
+  friend const LightIntensity operator*(LightIntensity li, float scalar);
+  friend const LightIntensity operator*(float scalar, LightIntensity li);
+
   friend std::ostream& operator<<(std::ostream& out, const LightIntensity& li);
+};
+
+struct ColData {
+  LightIntensity ambient;
+  LightIntensity diffuse;
+  LightIntensity specular;
+  LightIntensity reflected;
+  LightIntensity refracted;
+  float shininess;
+
+  ColData(LightIntensity ambient, LightIntensity diffuse, LightIntensity specular, LightIntensity reflected, LightIntensity refracted, float shininess);
+  ColData();
+};
+
+class LightSource {
+private:
+  Eigen::Vector4f position;
+  LightIntensity intensity;
+
+public:
+  LightSource(const Eigen::Vector4f& position, const LightIntensity& intensity);
+  LightSource(const Eigen::Vector3f& position, const LightIntensity& intensity);
+  LightSource();
+
+  ~LightSource();
+
+  const LightIntensity& rgb() const;
+  const Eigen::Vector4f& pos() const;
 };

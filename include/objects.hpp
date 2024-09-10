@@ -32,6 +32,8 @@ const IntersectionPoint operator*(const Eigen::Transform<float, 3, Eigen::Projec
 
 class BaseObject {
 public:
+  virtual ~BaseObject();
+
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const = 0;
   bool intersect(const Ray& r, std::vector<IntersectionPoint>& dest) const;
 
@@ -50,7 +52,9 @@ public:
   RootObject(BaseObject* child);
   RootObject() = delete;
 
-  bool intersect(const Ray& r, IntersectionPoint& dest) const;
+  ~RootObject();
+
+  bool intersect(const Ray& r, IntersectionPoint* dest = nullptr) const;
 
   bool included(const Eigen::Vector4f& point) const;
 };
@@ -65,6 +69,8 @@ protected:
 public:
   Primitive(ColData col, float index);
   Primitive();
+
+  virtual ~Primitive();
 };
 
 class Sphere: public Primitive {
@@ -99,6 +105,8 @@ private:
   Eigen::Transform<float, 3, Eigen::Projective> transformation;
   Eigen::Transform<float, 3, Eigen::Projective> inverse;
 
+  virtual ~Transformation();
+
 public:
   static Transformation* Scaling(BaseObject* child, float ax, float ay, float az);
 
@@ -124,17 +132,18 @@ public:
 
 class Combination: public BaseObject {
 protected:
-  BaseObject* O1;
-  BaseObject* O2;
+  std::vector<BaseObject*> objects;
 
 public:
-  Combination(BaseObject* O1, BaseObject* O2);
+  Combination(std::vector<BaseObject*> objects);
   Combination() = delete;
+
+  virtual ~Combination();
 };
 
 class Union: public Combination {
 public:
-  Union(BaseObject* O1, BaseObject* O2);
+  Union(std::vector<BaseObject*> objects);
   Union() = delete;
 
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const override;
@@ -143,7 +152,7 @@ public:
 };
 
 class Intersection: public Combination {
-  Intersection(BaseObject* O1, BaseObject* O2);
+  Intersection(std::vector<BaseObject*> objects);
   Intersection() = delete;
 
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const override;
@@ -152,7 +161,7 @@ class Intersection: public Combination {
 };
 
 class Exclusion: public Combination {
-  Exclusion(BaseObject* O1, BaseObject* O2);
+  Exclusion(std::vector<BaseObject*> objects);
   Exclusion() = delete;
 
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const override;
@@ -161,7 +170,7 @@ class Exclusion: public Combination {
 };
 
 class Subtraction: public Combination {
-  Subtraction(BaseObject* O1, BaseObject* O2);
+  Subtraction(std::vector<BaseObject*> objects);
   Subtraction() = delete;
 
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const override;

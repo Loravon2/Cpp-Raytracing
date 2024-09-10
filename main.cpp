@@ -1,44 +1,90 @@
 #include <iostream>
 #include <Dense>
+#include <opencv2/opencv.hpp>
+#include "math.h"
 
+#include <scene.hpp>
 #include <ray.hpp>
 #include <objects.hpp>
 #include <light.hpp>
-#include "math.h"
 #include "defines.h"
 
 int main() {
-  HalfSpace* H = new HalfSpace();
-  Transformation* rot = Transformation::Rotation_X(H, -M_PI_2);
+  LightIntensity white(1, 1, 1);
+  LightIntensity red(1, 0, 0);
+  LightIntensity blue(0, 0, 1);
+  LightIntensity green(0, 1, 0);
+  LightIntensity black(0, 0, 0);
+  LightIntensity purple(102.0 / 255.0, 51.0 / 255.0, 153.0 / 255.0);
 
-  Sphere* Sph = new Sphere();
-  Transformation* trans = Transformation::Translation(Sph, 1, 1, 0);
+  ColData shiny(white, white, white, white, white, 1);
+  ColData red_flat(red, red, red, red, black, 2);
+  ColData reflective_black(black, black, white * 0.2, white * 0.2, black, 3);
+  ColData mirror(black, black, white, white, black, 4);
+  ColData mirror_blue(black, black, blue, blue, black, 4);
+  ColData mirror_green(black, black, green, green, black, 4);
+  ColData mirror_purple(black, black, purple, purple, black, 4);
 
-  Union* U = new Union(rot, trans);
-
-  RootObject* R = new RootObject(U);
-
-  Eigen::Vector3f S(1, 1, 0);
-  Eigen::Vector3f d(sqrtf(2)/2, -sqrtf(2)/2, 0);
-
-  Ray r(S, d, 1.0);
-
-  IntersectionPoint P;
-  if (R->intersect(r, P)) {
-    std::cout << P.point << "\n\n" << P.normal << "\n\n" << P.distance << std::endl;
-  }
-  else {
-    std::cout << "NO INTERSECTION" << std::endl;
-  }
+  // Tibauts Example
+  // Sphere* Sphere1 = new Sphere(shiny, 1);
 
 
-  LightIntensity li(0.2,0.5,0.3);
-  std::cout << li << "\n";
+  // Sphere* Sphere2 = new Sphere(shiny, 1);
+  // Transformation* scal1 = Transformation::Scaling(Sphere2, 4, 4, 4);
 
-  LightIntensity li2(0.7,0.12,0.5);
+  // HalfSpace* HalfSpace1 = new HalfSpace(shiny, 1, Eigen::Vector4f(1, 0, 0, 0));
+  // Transformation* trans1 = Transformation::Translation(HalfSpace1, 0, 0, 2.5);
 
-  LightIntensity li3 = li + li2;
-  std::cout << li3 << std::endl;
+  // Union* Union1 = new Union(scal1, trans1);
+
+
+  // Union* Union2 = new Union(Sphere1, Union1);
+  // RootObject* R = new RootObject(Union2);
+
+  // LightSource* source1 = new LightSource(Eigen::Vector4f(0, 0, 0, 1), white);
+  // LightSource* source2 = new LightSource(Eigen::Vector4f(1, 1, 1, 1), white);
+
+  // Scene scene(128, 4, 2, Eigen::Vector4f(-1, -2, -10, 1), Eigen::Vector4f(0, 0, -20, 1),
+  //             LightIntensity(0.1, 0.1, 0.1), 1, 7, {source1, source2}, 
+  //             R);
+
+
+  //Thomas Example
+  Sphere* Sphere1 = new Sphere(red_flat, 4);
+  Transformation* trans1 = Transformation::Translation(Sphere1, 1, 1, 4);
+
+  HalfSpace* Half1 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 0, -1, 0));
+  Transformation* trans2 = Transformation::Translation(Half1, 0, 0, 7);
+
+  HalfSpace* Half2 = new HalfSpace(mirror_blue, 1, Eigen::Vector4f(1, 0, 0, 0));
+
+  HalfSpace* Half3 = new HalfSpace(mirror_green, 1, Eigen::Vector4f(-1, 0, 0, 0));
+  Transformation* trans3 = Transformation::Translation(Half3, 3, 0, 0);
+
+  HalfSpace* Half4 = new HalfSpace(mirror_purple, 1, Eigen::Vector4f(0, -1, 0, 0));
+  Transformation* trans4 = Transformation::Translation(Half4, 0, 3, 0);
+
+  HalfSpace* Half5 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 0, 1, 0));
+  Transformation* trans5 = Transformation::Translation(Half5, 0, 0, -3);
+
+  HalfSpace* Half6 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 1, 0, 0));
+
+  Union* union1 = new Union({trans1, trans2, Half2, trans3, trans4, trans5, Half6});
+
+  RootObject* root = new RootObject(union1);
+
+  LightSource* source1 = new LightSource(Eigen::Vector4f(1.5, 1, -2, 1), white);
+
+  Scene scene(32, 3, 2, Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1.5, 1, -2, 1),
+              LightIntensity(0.1, 0.1, 0.1), 1, 5, {source1}, root);
+
+  std::cout << "starting:\n";
+
+  cv::Mat_<cv::Vec3b> img = scene.generate();
+
+  std::cout << img;
+
+  cv::imwrite("output.png", img);
 
   return 0;
 }

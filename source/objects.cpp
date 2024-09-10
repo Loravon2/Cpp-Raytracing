@@ -34,11 +34,16 @@ bool BaseObject::included(const Eigen::Vector3f& point) {
   return included(point, (Eigen::Transform<float, 3, Eigen::Projective>) Eigen::DiagonalMatrix<float, 3>(1, 1, 1));
 }
 
-
+BaseObject::~BaseObject() {}
 
 RootObject::RootObject(BaseObject* child): child(child) {}
 
-bool RootObject::intersect(const Ray& r, IntersectionPoint& dest) const {
+RootObject::~RootObject() {
+  std::cout << "Destructing Root Object at " << this << std::endl;
+  delete child;
+}
+
+bool RootObject::intersect(const Ray& r, IntersectionPoint* dest) const {
   std::vector<IntersectionPoint> intersection_points;
 
   child->intersect(r, intersection_points);
@@ -47,7 +52,9 @@ bool RootObject::intersect(const Ray& r, IntersectionPoint& dest) const {
 
   std::sort(intersection_points.begin(), intersection_points.end());
 
-  dest = intersection_points.at(0);
+  if (dest != nullptr) {
+    *dest = intersection_points.at(0);
+  }
 
   return true;
 }
@@ -66,6 +73,9 @@ Primitive::Primitive():
   Primitive(ColData(), 1.0)
   {}
 
+Primitive::~Primitive() {
+  std::cout << "Destructing Primitive at " << this << std::endl;
+}
 
 
 Sphere::Sphere(ColData col, float index):
@@ -79,21 +89,33 @@ Sphere::Sphere():
 bool Sphere::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
   Ray modified = inverse_transform * r;
 
-  Eigen::Vector4f lot = modified.start_point() - Eigen::Vector3f::Zero().homogeneous() ;
+  Eigen::Vector4f lot =  Eigen::Vector3f::Zero().homogeneous() - modified.start_point();
   float dot = modified.direction().dot(lot);
   float delta = 1 + dot*dot - lot.norm() * lot.norm();
 
   if (delta < 0) return false;
 
+  bool found = false;
+
   std::array<float, 2> t_arr = {dot + sqrtf(delta), dot - sqrtf(delta)};
   for (float t : t_arr) {
     if (t > 0) {
       Eigen::Vector4f P = modified.start_point() + t * modified.direction();
-      dest.push_back(IntersectionPoint(P, P - Eigen::Vector3f::Zero().homogeneous(), col, index, t));
+      Eigen::Vector4f normal = P - Eigen::Vector3f::Zero().homogeneous();
+
+      float refr_index = index;
+
+      if (this->included(r.start_point(), inverse_transform)) {
+        normal *= -1.0;
+        refr_index = 1.0; //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
+      }
+
+      dest.push_back(IntersectionPoint(P, normal, col, refr_index, t));
+      found = true;
     }
   }
 
-  return true;
+  return found;
 }
 
 bool Sphere::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
@@ -121,12 +143,17 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
   if (normal.dot(modified.direction()) == 0) return false;
 
   float t = normal.dot(modified.start_point() - Eigen::Vector3f::Zero().homogeneous()) / normal.dot(modified.direction());
-
-  if (t > 0) return false;
+  
+  if (t >= 0) return false;
 
   Eigen::Vector4f P = modified.start_point() - t * modified.direction();
 
-  dest.push_back(IntersectionPoint(P, normal, col, index, -t));
+  if (this->included(r.start_point(), inverse_transform)) {
+    dest.push_back(IntersectionPoint(P, normal, col, 1.0, -t)); //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
+  }
+  else {
+    dest.push_back(IntersectionPoint(P, -normal, col, index, -t));
+  }
 
   return true;
 }
@@ -159,6 +186,11 @@ Transformation::Transformation(BaseObject* child, Eigen::DiagonalMatrix<float, 3
 Transformation::Transformation(BaseObject* child, Eigen::AngleAxis<float> rotation): child(child), transformation(rotation), inverse(rotation.inverse()) {}
 Transformation::Transformation(BaseObject* child, Eigen::Translation<float, 3> translation): child(child), transformation(translation), inverse(translation.inverse()) {}
 
+Transformation::~Transformation() {
+  std::cout << "Destructing Transformation at " << this << std::endl;
+  delete child;
+}
+
 bool Transformation::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
   Eigen::Transform<float, 3, Eigen::Projective> new_inverse_transform = inverse * inverse_transform;
 
@@ -189,32 +221,58 @@ const Eigen::Transform<float, 3, Eigen::Projective>& Transformation::inverse_mat
 
 
 
-Combination::Combination(BaseObject* O1, BaseObject* O2): O1(O1), O2(O2) {}
+Combination::Combination(std::vector<BaseObject*> objects): objects(objects) {}
 
+Combination::~Combination() {
+  std::cout << "Destructing Combination at " << this << std::endl;
+  for (BaseObject* O : objects) {
+    delete O;
+  }
+}
 
-Union::Union(BaseObject* O1, BaseObject* O2): Combination(O1, O2) {}
+Union::Union(std::vector<BaseObject*> objects): Combination(objects) {}
 
 bool Union::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
-  bool found1 = O1->intersect(r, inverse_transform, dest);
-  bool found2 = O2->intersect(r, inverse_transform, dest);
+  bool found = false;
+  for (BaseObject* O : objects) {
+    bool foundO = O->intersect(r, inverse_transform, dest);
+    found = found || foundO;
+  }
 
-  return found1 || found2;
+  return found;
 }
 
 bool Union::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
-  return O1->included(point, inverse_transform) || O2->included(point, inverse_transform);
+  for (BaseObject* O : objects) {
+    if (O->included(point, inverse_transform)) {
+      return true;
+    }
+  }
+
+  return false;  
 }
 
 
-Intersection::Intersection(BaseObject* O1, BaseObject* O2): Combination(O1, O2) {}
+Intersection::Intersection(std::vector<BaseObject*> objects): Combination(objects) {}
 
 bool Intersection::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
+  if (objects.empty()) {
+    return false;
+  }
+
   std::vector<IntersectionPoint> O1_points;
-  O1->intersect(r, inverse_transform, O1_points);
+  objects[0]->intersect(r, inverse_transform, O1_points);
 
   bool found = false;
   for (IntersectionPoint& p : O1_points) {
-    if (O2->included(p.point, inverse_transform)) {
+    bool available = true;
+
+    for (BaseObject* O : objects) {
+      if (!O->included(p.point, inverse_transform)) {
+        available = false;
+      }
+    }
+    if (available) {
       dest.push_back(p);
       found = true;
     }
@@ -224,86 +282,123 @@ bool Intersection::intersect(const Ray& r, const Eigen::Transform<float, 3, Eige
 }
 
 bool Intersection::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
-  return O1->included(point, inverse_transform) && O2->included(point, inverse_transform);
+  if (objects.empty()) {
+    return false;
+  }
+  
+  for (BaseObject* O : objects) {
+    if (!O->included(point, inverse_transform)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 
-Exclusion::Exclusion(BaseObject* O1, BaseObject* O2): Combination(O1, O2) {}
+Exclusion::Exclusion(std::vector<BaseObject*> objects): Combination(objects) {}
 
 bool Exclusion::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
-  std::vector<IntersectionPoint> O1_points, O2_points;
-  O1->intersect(r, inverse_transform, O1_points);
-  O2->intersect(r, inverse_transform, O2_points);
-
-  std::sort(O1_points.begin(), O1_points.end());
-  std::sort(O2_points.begin(), O2_points.end());
-
-  auto i = O1_points.begin();
-  auto j = O2_points.begin();
-
   bool found = false;
+  
+  for (BaseObject* O1 : objects) {
+    std::vector<IntersectionPoint> points;
+    O1->intersect(r, points);
 
-  while (i < O1_points.end() || j < O2_points.end()) {
-    if (i >= O1_points.end() || (*j < *i)) {
-      dest.push_back(*j);
-      j++;
-      found = true;
-      continue;
+    for (IntersectionPoint& p : points) {
+      bool available = true;
+      
+      for (BaseObject* O2 : objects) {
+        if (O1 == O2) {
+          continue;
+        }
+
+        if (O2->included(p.point, inverse_transform)) {
+          available = false;
+          break;
+        }
+      }
+
+      if (available) {
+        dest.push_back(p);
+        found = true;
+      }
     }
-
-    if (j >= O2_points.end() || (*i < *j)) {
-      dest.push_back(*i);
-      i++;
-      found = true;
-      continue;
-    }
-
-    i++;
-    j++; //if both are equal, we dont want to add neither, since we are looking for the symmetric difference
   }
 
   return found;
 }
 
 bool Exclusion::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
-  return O1->included(point, inverse_transform) != O2->included(point, inverse_transform);
+  bool inc = false;
+
+  for (BaseObject* O : objects) {
+    if (O->included(point, inverse_transform)) {
+      if (not inc) {
+        inc = true;
+      }
+      else {
+        return false;
+      }
+    }
+  }
+
+  return inc;
 }
 
 
-Subtraction::Subtraction(BaseObject* O1, BaseObject* O2): Combination(O1, O2) {}
+Subtraction::Subtraction(std::vector<BaseObject*> objects): Combination(objects) {}
 
 bool Subtraction::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
-  std::vector<IntersectionPoint> O1_points, O2_points;
-  O1->intersect(r, inverse_transform, O1_points);
-  O2->intersect(r, inverse_transform, O2_points);
-
-  std::sort(O1_points.begin(), O1_points.end());
-  std::sort(O2_points.begin(), O2_points.end());
-
-  auto i = O1_points.begin();
-  auto j = O2_points.begin();
+  if (objects.empty()) {
+    return false;
+  }
 
   bool found = false;
+  std::vector<IntersectionPoint> O1_points;
+  objects[0]->intersect(r, inverse_transform, O1_points);
 
-  while (i < O1_points.end()) {
-    if (j >= O2_points.end() || *i < *j) {
-      dest.push_back(*i);
-      i++;
+  for (IntersectionPoint& p : O1_points) {
+    bool available = true;
+    
+    for (BaseObject* O2 : objects) {
+      if (objects[0] == O2) {
+        continue;
+      }
+
+      if (O2->included(p.point, inverse_transform)) {
+        available = false;
+        break;
+      }
+    }
+
+    if (available) {
       found = true;
-      continue;
+      dest.push_back(p);
     }
-
-    if (*j < *i) {
-      j++;
-      continue;
-    }
-
-    i++; // we cant add i, since it is equal to j, i.e. subtracted
   }
 
   return found;
 }
 
 bool Subtraction::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
-  return O1->included(point, inverse_transform) && !O2->included(point, inverse_transform);
+  if (objects.empty()) {
+    return false;
+  }
+
+  if (not objects[0]->included(point, inverse_transform)) {
+    return false;
+  }
+
+  for (BaseObject* O2 : objects) {
+    if (objects[0] == O2) {
+      continue;
+    }
+
+    if (O2->included(point, inverse_transform)) {
+      return false;
+    }
+  }
+
+  return true;
 }
