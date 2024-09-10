@@ -1,5 +1,70 @@
 #include <scene.hpp>
 
+static Scene::Scene read_parameters(std::istream& input){
+
+        // open json file:
+        std::ifstream scene_file(input, std::ifstream::binary);
+        if (!scene_file.is_open()){
+            cout << "CAN'T OPEN THE GIVEN FILE!" // or with try/catch 
+            return 1;
+        }
+        Json::Value scene_data;
+        scene_file >> scene_data ;
+
+        // read parameters from scene_data
+        // read from screen:
+        float dpi = scene_data["screen"]["dpi"].asFloat() ;
+        float height = scene_data["screen"]["dimensions"][0].asFloat();
+        float width = scene_data["screen"]["dimensions"][1].asFloat() ;
+
+        Eigen::Vector4f position = Eigen::Vector4f (scene_data["screen"]["position"][0].asFloat(),
+                                                    scene_data["screen"]["position"][1].asFloat(),
+                                                    scene_data["screen"]["position"][2].asFloat(),
+                                                    scene_data["screen"]["position"][3].asFloat()) ;
+
+        Eigen::Vector4f observer = Eigen::Vector4f( scene_data["screen"]["observer"][0].asFloat(),
+                                                    scene_data["screen"]["observer"][1].asFloat(),
+                                                    scene_data["screen"]["observer"][2].asFloat(),
+                                                    scene_data["screen"]["observer"][3].asFloat()) ;
+
+        float index = scene_data["medium"]["index"].asFloat;
+        unsigned max_recursion_depth = scene_data["medium"]["recursion"].asUINT();
+
+        LightIntensity ambient_light = LightIntensity(scene_data["medium"]["ambient"][0].asFloat(),
+                                                      scene_data["medium"]["ambient"][1].asFloat(),
+                                                      scene_data["medium"]["ambient"][2].asFloat());
+
+        // add a loop to itearte over the light sources and store it:
+        //Json::Value light_sources_pos = scene_data["sources"]["position"];
+        //Json::Value light_sources_intensity = scene_data["sources"]["position"];
+
+        Json::Value light_sources = scene_data["sources"];
+        std::vector<LightSource*> sources = {nullptr};
+        
+        Eigen::Vector3f light_source_intensity;
+    
+        for(unsigned i=0; i<sources.size();i++){
+            const Json::Value& source = sources[i];
+            Eigen::Vector4f light_source_position = Eigen::Vector4f(source["position"][0].asFloat(),
+                                                                    source["position"][1].asFloat(),
+                                                                    source["position"][2].asFloat(),
+                                                                    source["position"][3].asFloat());
+
+            
+            LightIntensity light_source_intensity = LightIntensity(Eigen::Vector4f(source["intensity"][0].asFloat(),
+                                                    source["intensity"][1].asFloat(),
+                                                    source["intensity"][2].asFloat(),
+                                                    source["intensity"][3].asFloat());
+
+            
+
+
+            sources.pushback(new LightIntensity(light_source_position,light_source_intensity))
+        }
+
+      // read objects (to come..):
+}
+
 Scene::Scene(float dpi, float width, float height,
             Eigen::Vector4f position, Eigen::Vector4f observer,
             LightIntensity ambient_light, float index,
