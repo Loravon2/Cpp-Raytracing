@@ -69,14 +69,9 @@ int main() {
 
   HalfSpace* Half6 = new HalfSpace(mirror, 1, Eigen::Vector4f(0, 1, 0, 0));
 
-  Union* union1 = new Union(trans1, trans2);
-  Union* union2 = new Union(union1, Half2);
-  Union* union3 = new Union(union2, trans3);
-  Union* union4 = new Union(union3, trans4);
-  Union* union5 = new Union(union4, trans5);
-  Union* union6 = new Union(union5, Half6);
+  Union* union1 = new Union({trans1, trans2, Half2, trans3, trans4, trans5, Half6});
 
-  RootObject* root = new RootObject(union6);
+  RootObject* root = new RootObject(union1);
 
   LightSource* source1 = new LightSource(Eigen::Vector4f(1.5, 1, -2, 1), white);
 
