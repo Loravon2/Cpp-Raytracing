@@ -5,8 +5,8 @@ static Scene Scene::read_parameters(std::istream& input){
         // open json file:
         std::ifstream scene_file(input, std::ifstream::binary);
         if (!scene_file.is_open()){
-            cout << "CAN'T OPEN THE GIVEN FILE!" // or with try/catch 
-            return 1;
+            cout << "CAN'T OPEN THE GIVEN FILE!"; // or with try/catch 
+          
         }
         Json::Value scene_data;
         scene_file >> scene_data ;
