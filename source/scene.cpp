@@ -51,7 +51,7 @@ static Scene Scene::read_parameters(std::istream& input){
                                                                     source["position"][3].asFloat());
 
             
-            LightIntensity light_source_intensity = LightIntensity(Eigen::Vector4f(source["intensity"][0].asFloat(),
+            LightIntensity light_source_intensity = LightIntensity(Eigen::Vector4f(source["intensity"][0].asFloat()),
                                                     source["intensity"][1].asFloat(),
                                                     source["intensity"][2].asFloat(),
                                                     source["intensity"][3].asFloat());
@@ -59,7 +59,7 @@ static Scene Scene::read_parameters(std::istream& input){
             
 
 
-            sources.pushback(new LightIntensity(light_source_position,light_source_intensity))
+            sources.pushback(new LightIntensity(light_source_position, light_source_intensity));
         }
 
       // read objects (to come..):
