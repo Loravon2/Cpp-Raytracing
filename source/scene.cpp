@@ -1,6 +1,6 @@
 #include <scene.hpp>
 
-static Scene::Scene read_parameters(std::istream& input){
+static Scene Scene::read_parameters(std::istream& input){
 
         // open json file:
         std::ifstream scene_file(input, std::ifstream::binary);
