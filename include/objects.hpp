@@ -105,8 +105,6 @@ private:
   Eigen::Transform<float, 3, Eigen::Projective> transformation;
   Eigen::Transform<float, 3, Eigen::Projective> inverse;
 
-  virtual ~Transformation();
-
 public:
   static Transformation* Scaling(BaseObject* child, float ax, float ay, float az);
 
@@ -119,6 +117,8 @@ public:
   Transformation(BaseObject* child, Eigen::DiagonalMatrix<float, 3> scaling);
   Transformation(BaseObject* child, Eigen::AngleAxis<float> rotation);
   Transformation(BaseObject* child, Eigen::Translation<float, 3> translation);
+
+  virtual ~Transformation();
 
   virtual bool intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const override;
 
