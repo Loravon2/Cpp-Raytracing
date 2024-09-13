@@ -142,17 +142,17 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
   
   if (normal.dot(modified.direction()) == 0) return false;
 
-  float t = normal.dot(modified.start_point() - Eigen::Vector3f::Zero().homogeneous()) / normal.dot(modified.direction());
+  float t = normal.dot(Eigen::Vector3f::Zero().homogeneous() - modified.start_point()) / normal.dot(modified.direction());
   
-  if (t >= 0) return false;
+  if (t <= 0) return false;
 
-  Eigen::Vector4f P = modified.start_point() - t * modified.direction();
+  Eigen::Vector4f P = modified.start_point() + t * modified.direction();
 
   if (this->included(r.start_point(), inverse_transform)) {
-    dest.push_back(IntersectionPoint(P, normal, col, 1.0, -t)); //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
+    dest.push_back(IntersectionPoint(P, normal, col, 1.0, t)); //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
   }
   else {
-    dest.push_back(IntersectionPoint(P, -normal, col, index, -t));
+    dest.push_back(IntersectionPoint(P, -normal, col, index, t));
   }
 
   return true;
@@ -161,7 +161,7 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
 bool HalfSpace::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
   Eigen::Vector4f modified = inverse_transform * point;
   
-  return normal.dot(modified - Eigen::Vector3f::Zero().homogeneous()) > 0;
+  return normal.dot(Eigen::Vector3f::Zero().homogeneous() - modified) > 0;
 }
 
 Transformation* Transformation::Scaling(BaseObject* child, float ax, float ay, float az) {
@@ -266,6 +266,10 @@ bool Intersection::intersect(const Ray& r, const Eigen::Transform<float, 3, Eige
       bool available = true;
 
       for (BaseObject* O2 : objects) {
+        if(O1 == O2) {
+          continue;
+        }
+
         if (!O2->included(p.point, inverse_transform)) {
           available = false;
           break;

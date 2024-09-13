@@ -6,6 +6,7 @@
 #include <scene.hpp>
 #include <ray.hpp>
 #include <objects.hpp>
+#include <composite.hpp>
 #include <light.hpp>
 #include "defines.h"
 
@@ -80,17 +81,21 @@ int main() {
 
 
   //Intersecting Spheres
-  Sphere* Sphere1 = new Sphere(red_flat, 1);
-  Sphere* Sphere2 = new Sphere(mirror_green, 1);
+  // Sphere* Sphere1 = new Sphere(red_flat, 1);
+  // Sphere* Sphere2 = new Sphere(mirror_green, 1);
 
-  Transformation* Trans1 = Transformation::Translation(Sphere2, 1.0 / sqrtf(3), 1.0 / sqrtf(3), -1.0 / sqrtf(3));
-  Transformation* Scal1 = Transformation::Scaling(Trans1, 2, 2, 2);
+  // Transformation* Trans1 = Transformation::Translation(Sphere2, 1.0 / sqrtf(3), 1.0 / sqrtf(3), -1.0 / sqrtf(3));
+  // Transformation* Scal1 = Transformation::Scaling(Trans1, 2, 2, 2);
 
-  Subtraction* Sub1 = new Subtraction({Sphere1, Scal1});
+  // Subtraction* Sub1 = new Subtraction({Sphere1, Scal1});
 
-  LightSource* source1 = new LightSource(Eigen::Vector4f(0, 5, 0, 1), white);
+  BaseObject* cube = Composites::cube(red_flat, 1);
+  Transformation* rot = Transformation::Rotation_Y(cube, M_PI_2);
+  Transformation* rot2 = Transformation::Rotation_X(rot, M_PI_2);
 
-  RootObject* root = new RootObject(Sub1);
+  LightSource* source1 = new LightSource(Eigen::Vector4f(0, 0, -3, 1), white);
+
+  RootObject* root = new RootObject(rot2);
 
   Scene scene(128, 3, 2, Eigen::Vector4f(-1.5, -1, -2, 1), Eigen::Vector4f(0, 0, -4, 1), 
               LightIntensity(0.3, 0.3, 0.3), 1, 5, {source1}, root);
