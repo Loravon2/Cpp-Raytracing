@@ -12,7 +12,7 @@ OPENCV_IMG  := opencv_imgcodecs
 all: main.exe
 
 main.exe: main.cpp $(SRC)/*.cpp
-	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -I$(DEF) -I$(EIGEN) -I$(OPENCV_INC) -l$(OPENCV_CORE) -l$(OPENCV_IMG) $^ -o $@
+	$(CXX) $(CXX_FLAGS) $^ -o $@ -I$(INCLUDE) -I$(DEF) -I$(EIGEN) -I$(OPENCV_INC) -l$(OPENCV_CORE) -l$(OPENCV_IMG)
 
 run: all
 	./main.exe

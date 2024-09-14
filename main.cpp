@@ -17,13 +17,15 @@ int main() {
   LightIntensity black(0, 0, 0);
   LightIntensity purple(102.0 / 255.0, 51.0 / 255.0, 153.0 / 255.0);
 
-  ColData shiny(white, white, white, white, white, 1);
+  ColData shiny(white, white, white, white, black, 1);
   ColData red_flat(red, red, red, red, black, 2);
   ColData reflective_black(black, black, white * 0.2, white * 0.2, black, 3);
   ColData mirror(black, black, white, white, black, 4);
   ColData mirror_blue(black, black, blue, blue, black, 4);
-  ColData mirror_green(black, black, green, green, black, 4);
+  ColData mirror_green(green, green, green, green, black, 4);
   ColData mirror_purple(black, black, purple, purple, black, 4);
+
+  ColData my_back_wall(white, white * 0.5, white, white, blue, 2);
 
   // Tibauts Example
   // Sphere* Sphere1 = new Sphere(shiny, 1);
@@ -88,12 +90,19 @@ int main() {
 
   Subtraction* Sub1 = new Subtraction({Sphere1, Scal1});
 
-  LightSource* source1 = new LightSource(Eigen::Vector4f(0, 5, 0, 1), white);
+  HalfSpace* HalfSpace1 = new HalfSpace(my_back_wall, 1, Eigen::Vector4f(-1, 0, 0, 0));
+  Transformation* Rot1 = Transformation::Rotation_Y(HalfSpace1, -M_PI_4);
+  Transformation* Trans2 = Transformation::Translation(Rot1, 3, 0, 0);
+  Transformation* Trans3 = Transformation::Translation(Trans2, 0, 0, 4);
 
-  RootObject* root = new RootObject(Sub1);
+  Union* Union1 = new Union({Sub1, Trans3});
+
+  RootObject* root = new RootObject(Union1);
+
+  LightSource* source1 = new LightSource(Eigen::Vector4f(0, 4, 0, 1), white);
 
   Scene scene(128, 3, 2, Eigen::Vector4f(-1.5, -1, -2, 1), Eigen::Vector4f(0, 0, -4, 1), 
-              LightIntensity(0.3, 0.3, 0.3), 1, 5, {source1}, root);
+              black, 1, 7, {source1}, root);
 
   std::cout << "starting:\n";
 
