@@ -19,9 +19,10 @@ struct IntersectionPoint{
   float index;
 
   float distance;
+  bool inside;
 
-  IntersectionPoint(Eigen::Vector4f point, Eigen::Vector4f normal, ColData color, float index, float distance);
-  IntersectionPoint(Eigen::Vector3f point, Eigen::Vector3f normal, ColData color, float index, float distance);
+  IntersectionPoint(Eigen::Vector4f point, Eigen::Vector4f normal, ColData color, float index, float distance, bool inside);
+  IntersectionPoint(Eigen::Vector3f point, Eigen::Vector3f normal, ColData color, float index, float distance, bool inside);
   IntersectionPoint();
 
   bool operator<(const IntersectionPoint& other) const;
