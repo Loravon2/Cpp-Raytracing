@@ -103,7 +103,7 @@ Scene Scene::read_parameters(std::istream& input){
               LightIntensity reflected_default(0.0f, 0.0f, 0.0f);
               LightIntensity refracted_default(0.0f, 0.0f, 0.0f);
               ColData color_default(ambient_default,diffuse_default,specular_default,
-                                    reflected_default, refracted_default,0);
+                                    reflected_default, refracted_default,1);
 
               if(subject.isMember("sphere")){
                 // check if colors are given:
