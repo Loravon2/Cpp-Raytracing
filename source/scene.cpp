@@ -105,42 +105,59 @@ Scene Scene::read_parameters(std::istream& input){
               ColData color_default(ambient_default,diffuse_default,specular_default,
                                     reflected_default, refracted_default,1);
 
-              if(subject.isMember("sphere")){
-                // check if colors are given:
-                if(subject["color"].isNull()){
-                  ColData sphere_sphere = color_default ;
-                }  
-                
+              if (subject.isMember("sphere")) {
+                    ColData sphere_color = color_default;  // Default color
 
-                float radius = subject["sphere"]["radius"].asFloat();
-                ColData sphere_color(LightIntensity(subject["sphere"]["color"]["ambient"][0].asFloat(),subject["sphere"]["color"]["ambient"][1].asFloat(),subject["sphere"]["color"]["ambient"][2].asFloat()),
-                                      LightIntensity(subject["sphere"]["color"]["diffuse"][0].asFloat(),subject["sphere"]["color"]["diffuse"][1].asFloat(),subject["sphere"]["color"]["diffuse"][2].asFloat()),
-                                      LightIntensity(subject["sphere"]["color"]["specular"][0].asFloat(),subject["sphere"]["color"]["specular"][1].asFloat(),subject["sphere"]["color"]["specular"][2].asFloat()),
-                                      LightIntensity(subject["sphere"]["color"]["reflected"][0].asFloat(),subject["sphere"]["color"]["reflected"][1].asFloat(),subject["sphere"]["color"]["reflected"][2].asFloat()),
-                                      LightIntensity(subject["sphere"]["color"]["refracted"][0].asFloat(),subject["sphere"]["color"]["refracted"][1].asFloat(),subject["sphere"]["color"]["refracted"][2].asFloat()),
-                                      subject["sphere"]["color"]["shininess"].asFloat());
+                    // If colors data are ther then , replace default colors
+                    if (subject["sphere"].isMember("color")) {
+                        sphere_color = ColData(
+                            LightIntensity(subject["sphere"]["color"]["ambient"][0].asFloat(),
+                                           subject["sphere"]["color"]["ambient"][1].asFloat(),
+                                           subject["sphere"]["color"]["ambient"][2].asFloat()),
+                            LightIntensity(subject["sphere"]["color"]["diffuse"][0].asFloat(),
+                                           subject["sphere"]["color"]["diffuse"][1].asFloat(),
+                                           subject["sphere"]["color"]["diffuse"][2].asFloat()),
+                            LightIntensity(subject["sphere"]["color"]["specular"][0].asFloat(),
+                                           subject["sphere"]["color"]["specular"][1].asFloat(),
+                                           subject["sphere"]["color"]["specular"][2].asFloat()),
+                            LightIntensity(subject["sphere"]["color"]["reflected"][0].asFloat(),
+                                           subject["sphere"]["color"]["reflected"][1].asFloat(),
+                                           subject["sphere"]["color"]["reflected"][2].asFloat()),
+                            LightIntensity(subject["sphere"]["color"]["refracted"][0].asFloat(),
+                                           subject["sphere"]["color"]["refracted"][1].asFloat(),
+                                           subject["sphere"]["color"]["refracted"][2].asFloat()),
+                            subject["sphere"]["color"]["shininess"].asFloat());
+                    }
 
-                BaseObject *objptr = new Sphere(sphere_color,subject["sphere"]["index"].asFloat());
-                  
+                    float radius = subject["sphere"]["radius"].asFloat();
+                    objptr = new Sphere(sphere_color, subject["sphere"]["index"].asFloat());
+                }
 
+                // HalfSpace case:
+                else if (subject.isMember("halfSpace")) {
+                    ColData halfspace_color = color_default;  // Default color
 
-              }
-
-              else if(subject.isMember("halfSpace")){
-                // check if colors are given:
-                if(subject["color"].isNull()){
-                  ColData halfspace_color = color_default;
-                  
-                }  
-
-                ColData halfspace_color(LightIntensity(subject["halfSpace"]["color"]["ambient"][0].asFloat(),subject["halfSpace"]["color"]["ambient"][1].asFloat(),subject["halfSpace"]["color"]["ambient"][2].asFloat()),
-                                        LightIntensity(subject["halfSpace"]["color"]["diffuse"][0].asFloat(),subject["halfSpace"]["color"]["diffuse"][1].asFloat(),subject["halfSpace"]["color"]["diffuse"][2].asFloat()),
-                                        LightIntensity(subject["halfSpace"]["color"]["specular"][0].asFloat(),subject["halfSpace"]["color"]["specular"][1].asFloat(),subject["halfSpace"]["color"]["specular"][2].asFloat()),
-                                        LightIntensity(subject["halfSpace"]["color"]["reflected"][0].asFloat(),subject["halfSpace"]["color"]["reflected"][1].asFloat(),subject["halfSpace"]["color"]["reflected"][2].asFloat()),
-                                        LightIntensity(subject["halfSpace"]["color"]["refracted"][0].asFloat(),subject["halfSpace"]["color"]["refracted"][1].asFloat(),subject["halfSpace"]["color"]["refracted"][2].asFloat()),
-                                        subject["halfSpace"]["color"]["shininess"].asFloat());
-                  
-                BaseObject *objptr = new HalfSpace(halfspace_color, subject["halfSpace"]["index"].asFloat(), Eigen::Vector4f(subject["halfSpace"]["normal"][0].asFloat(),
+                    // If color data exists, replace default colora
+                    if (subject["halfSpace"].isMember("color")) {
+                        halfspace_color = ColData(
+                            LightIntensity(subject["halfSpace"]["color"]["ambient"][0].asFloat(),
+                                           subject["halfSpace"]["color"]["ambient"][1].asFloat(),
+                                           subject["halfSpace"]["color"]["ambient"][2].asFloat()),
+                            LightIntensity(subject["halfSpace"]["color"]["diffuse"][0].asFloat(),
+                                           subject["halfSpace"]["color"]["diffuse"][1].asFloat(),
+                                           subject["halfSpace"]["color"]["diffuse"][2].asFloat()),
+                            LightIntensity(subject["halfSpace"]["color"]["specular"][0].asFloat(),
+                                           subject["halfSpace"]["color"]["specular"][1].asFloat(),
+                                           subject["halfSpace"]["color"]["specular"][2].asFloat()),
+                            LightIntensity(subject["halfSpace"]["color"]["reflected"][0].asFloat(),
+                                           subject["halfSpace"]["color"]["reflected"][1].asFloat(),
+                                           subject["halfSpace"]["color"]["reflected"][2].asFloat()),
+                            LightIntensity(subject["halfSpace"]["color"]["refracted"][0].asFloat(),
+                                           subject["halfSpace"]["color"]["refracted"][1].asFloat(),
+                                           subject["halfSpace"]["color"]["refracted"][2].asFloat()),
+                            subject["halfSpace"]["color"]["shininess"].asFloat());
+                    }
+                objptr = new HalfSpace(halfspace_color, subject["halfSpace"]["index"].asFloat(), Eigen::Vector4f(subject["halfSpace"]["normal"][0].asFloat(),
                                                                                                                              subject["halfSpace"]["normal"][1].asFloat(),
                                                                                                                              subject["halfSpace"]["normal"][2].asFloat(),0));
 
