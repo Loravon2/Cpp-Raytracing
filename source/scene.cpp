@@ -184,7 +184,6 @@ Scene Scene::read_parameters(std::istream& input){
                 else if(transformation["rotation"]["direction"].asUInt() == 1){
                   trans = Transformation::Rotation_Y(objptr,transformation["rotation"]["angle"].asFloat());
 
-
                 }
                 else if(transformation["rotation"]["direction"].asUInt() == 3){
                   trans = Transformation::Rotation_Z(objptr,transformation["rotation"]["angle"].asFloat());
