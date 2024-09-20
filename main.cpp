@@ -117,7 +117,7 @@ int main() {
   // Transformation* Trans3 = Transformation::Translation(Trans2, 0, 0, 4);
 
   // Sphere* Sphere3 = new Sphere(mirror_purple, 1);
-  // Exclusion* Ex1 = new Exclusion({Sphere3, Sub1});
+  // Subtraction* Ex1 = new Subtraction({Sphere3, Sub1});
 
   // Union* Union1 = new Union({Ex1, Trans3});
 
@@ -130,7 +130,6 @@ int main() {
   //             black, 1, 7, {source1, source2}, root);
 
   // Square?
-
   HalfSpace* right = new HalfSpace(red_flat, 1, Eigen::Vector4f::UnitX());
   Transformation* T1 = Transformation::Translation(right, 0.5, 0, 0);
 
@@ -151,7 +150,7 @@ int main() {
 
   Intersection* cube = new Intersection({T1, T2, T3, T4, T5, T6});
 
-  Transformation* rot = Transformation::Rotation_Y(cube, M_PI_4);
+  Transformation* rot = Transformation::Rotation_Y(cube, M_PI / 5);
 
   RootObject* root = new RootObject(rot);
 

@@ -104,7 +104,7 @@ bool Sphere::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Pro
       Eigen::Vector4f normal = P - Eigen::Vector3f::Zero().homogeneous();
 
       bool inside = false;
-      if (normal.dot(r.direction()) > 0) {
+      if (normal.dot(modified.direction()) > 0) {
         inside = true;
       }
 
@@ -147,7 +147,7 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
   Eigen::Vector4f P = modified.start_point() + t * modified.direction();
 
   bool inside = false;
-  if (this->normal.dot(r.direction()) > 0) {
+  if (this->normal.dot(modified.direction()) > 0) {
     inside = true;
   }
 
@@ -268,7 +268,7 @@ bool Intersection::intersect(const Ray& r, const Eigen::Transform<float, 3, Eige
           continue;
         }
 
-        if (!O2->included(p.point, inverse_transform)) {
+        if (!O2->included(p.point)) {
           available = false;
           break;
         }
@@ -306,7 +306,7 @@ bool Exclusion::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
   
   for (BaseObject* O1 : objects) {
     std::vector<IntersectionPoint> points;
-    O1->intersect(r, points);
+    O1->intersect(r, inverse_transform, points);
 
     for (IntersectionPoint& p : points) {
       unsigned inclusions = 0;
@@ -316,7 +316,7 @@ bool Exclusion::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
           continue;
         }
 
-        if (O2->included(p.point, inverse_transform)) {
+        if (O2->included(p.point)) {
           inclusions++;
         }
       }
@@ -368,7 +368,7 @@ bool Subtraction::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen
         continue;
       }
 
-      if (O2->included(p.point, inverse_transform)) {
+      if (O2->included(p.point)) {
         available = false;
         break;
       }
@@ -389,7 +389,7 @@ bool Subtraction::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen
     O2->intersect(r, inverse_transform, O2_points);
 
     for (IntersectionPoint& p : O2_points) {
-      if (objects[0]->included(p.point, inverse_transform)) {
+      if (objects[0]->included(p.point)) {
         found = true;
         dest.push_back(p);
       }
