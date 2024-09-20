@@ -6,6 +6,7 @@
 #include <scene.hpp>
 #include <ray.hpp>
 #include <objects.hpp>
+#include <composite.hpp>
 #include <light.hpp>
 #include "defines.h"
 
