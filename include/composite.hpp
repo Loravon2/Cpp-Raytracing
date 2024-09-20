@@ -3,5 +3,6 @@
 
 class Composites: public BaseObject{
 public:
-  static BaseObject* cube(ColData col, float index);
+  static Intersection* cube(ColData col, float index);
+  static BaseObject* triangle(ColData col, float index);
 };
