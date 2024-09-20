@@ -1,20 +1,20 @@
 #include <objects.hpp>
 
-IntersectionPoint::IntersectionPoint(Eigen::Vector4f point, Eigen::Vector4f normal, ColData color, float index, float distance): point(point), normal(normal.normalized()), color(color), index(index), distance(distance) {
+IntersectionPoint::IntersectionPoint(Eigen::Vector4f point, Eigen::Vector4f normal, ColData color, float index, float distance, bool inside): point(point), normal(normal.normalized()), color(color), index(index), distance(distance), inside(inside) {
   eigen_assert(point[3] == 1);
   eigen_assert(normal[3] == 0);
 }
 
-IntersectionPoint::IntersectionPoint(Eigen::Vector3f point, Eigen::Vector3f normal, ColData color, float index, float distance): IntersectionPoint((Eigen::Vector4f) point.homogeneous(), normal.homogeneous() - Eigen::Vector4f::UnitW(), color, index, distance) {}
+IntersectionPoint::IntersectionPoint(Eigen::Vector3f point, Eigen::Vector3f normal, ColData color, float index, float distance, bool inside): IntersectionPoint((Eigen::Vector4f) point.homogeneous(), normal.homogeneous() - Eigen::Vector4f::UnitW(), color, index, distance, inside) {}
 
-IntersectionPoint::IntersectionPoint(): IntersectionPoint(Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1, 0, 0, 0), ColData(), 1.0, 0.0) {}
+IntersectionPoint::IntersectionPoint(): IntersectionPoint(Eigen::Vector4f(0, 0, 0, 1), Eigen::Vector4f(1, 0, 0, 0), ColData(), 1.0, 0.0, false) {}
 
 bool IntersectionPoint::operator<(const IntersectionPoint& other) const {
   return this->distance < other.distance;
 }
 
 const IntersectionPoint operator*(const Eigen::Transform<float, 3, Eigen::Projective>& transformation, const IntersectionPoint& p) {
-  return IntersectionPoint(transformation * p.point, transformation * p.normal, p.color, p.index, p.distance);
+  return IntersectionPoint(transformation * p.point, transformation * p.normal, p.color, p.index, p.distance, p.inside);
 }
 
 
@@ -103,14 +103,12 @@ bool Sphere::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Pro
       Eigen::Vector4f P = modified.start_point() + t * modified.direction();
       Eigen::Vector4f normal = P - Eigen::Vector3f::Zero().homogeneous();
 
-      float refr_index = index;
-
-      if (this->included(r.start_point(), inverse_transform)) {
-        normal *= -1.0;
-        refr_index = 1.0; //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
+      bool inside = false;
+      if (normal.dot(modified.direction()) > 0) {
+        inside = true;
       }
 
-      dest.push_back(IntersectionPoint(P, normal, col, refr_index, t));
+      dest.push_back(IntersectionPoint(P, normal, col, index, t, inside));
       found = true;
     }
   }
@@ -121,8 +119,8 @@ bool Sphere::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::Pro
 bool Sphere::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
   Eigen::Vector4f modified = inverse_transform * point;
   
-  float dist = (modified - Eigen::Vector3f::Zero().homogeneous()).norm();
-  return dist <= 1 && dist >= -1;
+  float dist = abs((modified - Eigen::Vector3f::Zero().homogeneous()).norm());
+  return dist < 1;
 }
 
 
@@ -142,26 +140,26 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
   
   if (normal.dot(modified.direction()) == 0) return false;
 
-  float t = normal.dot(modified.start_point() - Eigen::Vector3f::Zero().homogeneous()) / normal.dot(modified.direction());
+  float t = normal.dot(Eigen::Vector3f::Zero().homogeneous() - modified.start_point()) / normal.dot(modified.direction());
   
-  if (t >= 0) return false;
+  if (t <= 0) return false;
 
-  Eigen::Vector4f P = modified.start_point() - t * modified.direction();
+  Eigen::Vector4f P = modified.start_point() + t * modified.direction();
 
-  if (this->included(r.start_point(), inverse_transform)) {
-    dest.push_back(IntersectionPoint(P, normal, col, 1.0, -t)); //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
-  }
-  else {
-    dest.push_back(IntersectionPoint(P, -normal, col, index, -t));
+  bool inside = false;
+  if (this->normal.dot(modified.direction()) > 0) {
+    inside = true;
   }
 
+  dest.push_back(IntersectionPoint(P, normal, col, index, t, inside));
+  
   return true;
 }
 
 bool HalfSpace::included(const Eigen::Vector4f& point, const Eigen::Transform<float, 3, Eigen::Projective>& inverse_transform) const {
   Eigen::Vector4f modified = inverse_transform * point;
   
-  return normal.dot(modified - Eigen::Vector3f::Zero().homogeneous()) > 0;
+  return normal.dot(Eigen::Vector3f::Zero().homogeneous() - modified) > 0;
 }
 
 Transformation* Transformation::Scaling(BaseObject* child, float ax, float ay, float az) {
@@ -266,7 +264,11 @@ bool Intersection::intersect(const Ray& r, const Eigen::Transform<float, 3, Eige
       bool available = true;
 
       for (BaseObject* O2 : objects) {
-        if (!O2->included(p.point, inverse_transform)) {
+        if(O1 == O2) {
+          continue;
+        }
+
+        if (!O2->included(p.point)) {
           available = false;
           break;
         }
@@ -304,23 +306,22 @@ bool Exclusion::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen::
   
   for (BaseObject* O1 : objects) {
     std::vector<IntersectionPoint> points;
-    O1->intersect(r, points);
+    O1->intersect(r, inverse_transform, points);
 
     for (IntersectionPoint& p : points) {
-      bool available = true;
+      unsigned inclusions = 0;
       
       for (BaseObject* O2 : objects) {
         if (O1 == O2) {
           continue;
         }
 
-        if (O2->included(p.point, inverse_transform)) {
-          available = false;
-          break;
+        if (O2->included(p.point)) {
+          inclusions++;
         }
       }
 
-      if (available) {
+      if (inclusions <= 1) {
         dest.push_back(p);
         found = true;
       }
@@ -367,7 +368,7 @@ bool Subtraction::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen
         continue;
       }
 
-      if (O2->included(p.point, inverse_transform)) {
+      if (O2->included(p.point)) {
         available = false;
         break;
       }
@@ -387,8 +388,8 @@ bool Subtraction::intersect(const Ray& r, const Eigen::Transform<float, 3, Eigen
     std::vector<IntersectionPoint> O2_points;
     O2->intersect(r, inverse_transform, O2_points);
 
-    for (IntersectionPoint p : O2_points) {
-      if (objects[0]->included(p.point, inverse_transform)) {
+    for (IntersectionPoint& p : O2_points) {
+      if (objects[0]->included(p.point)) {
         found = true;
         dest.push_back(p);
       }
