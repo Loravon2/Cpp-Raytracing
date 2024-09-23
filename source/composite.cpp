@@ -20,19 +20,39 @@ Intersection* Composites::cube(ColData col, float index){
   return Cube;
 }
 
-BaseObject* Composites::triangle(ColData col, float index){
-   Intersection* cube1 = Composites::cube(col, index);
-   Intersection* cube2 = Composites::cube(col, index);
-   Intersection* cube3 = Composites::cube(col, index);
-   Intersection* cube4 = Composites::cube(col, index);
-   Intersection* cube5 = Composites::cube(col, index);
-   Intersection* cube6 = Composites::cube(col, index);
+// Did union instead of subtraction but its an interesting pattern
 
-   Transformation* RightTrans = Transformation::Translation(cube2, 0.5, 0, 0);
-   Transformation* RightTrans2 = Transformation::Translation(cube3, 1, 0, 0);
-   Transformation* UpTrans = Transformation::Translation(cube4, 0, 0.5, 0);
-   Transformation* UpRTrans = Transformation::Translation(cube5, 0.5, 0.5, 0);
-   Transformation* UpTrans2 = Transformation::Translation(cube6, 0, 1, 0);
-   Union* tri = new Union({cube1, RightTrans, RightTrans2, UpTrans, UpRTrans, UpTrans2});
+Union* Composites::cube_pattern(ColData col, float index){
+  Intersection* cube = Composites::cube(col, index);
+  HalfSpace* diag1 = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
+  HalfSpace* diag2 = new HalfSpace(col, index, Eigen::Vector4f(-1, 0, 0, 0));
+  
+  Transformation* diag1Trans = Transformation::Rotation_Z(diag1, -M_PI_4);
+  Transformation* diag2Trans = Transformation::Rotation_Z(diag2, M_PI_4);
+
+  Union* uni = new Union({cube, diag1Trans, diag2Trans});
+  return uni;
+}
+
+
+Subtraction* Composites::triangle_isosceles(ColData col, float index){
+   Intersection* cube1 = Composites::cube(col, index);
+   Transformation* cubetrans = Transformation::Rotation_Z(cube1, M_PI_4);
+   HalfSpace* diag = new HalfSpace(col, index, Eigen::Vector4f(0, 1, 0, 0));
+   
+   Subtraction* tri = new Subtraction({cubetrans, diag});
    return tri;
+}
+
+//Dont know about this one. doesnt really work how i imagined it (i think?)
+Subtraction* Composites::triangle_equilateral(ColData col, float index){
+  Intersection* cube = Composites::cube(col, index);
+  HalfSpace* diag1 = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
+  HalfSpace* diag2 = new HalfSpace(col, index, Eigen::Vector4f(-1, 0, 0, 0));
+  
+  Transformation* diag1Trans = Transformation::Rotation_Z(diag1, -M_PI_4);
+  Transformation* diag2Trans = Transformation::Rotation_Z(diag2, M_PI_4);
+
+  Subtraction* sub = new Subtraction({cube, diag1Trans, diag2Trans});
+  return sub;
 }
