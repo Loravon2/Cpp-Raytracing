@@ -20,7 +20,7 @@ Intersection* Composites::cube(ColData col, float index){
   return Cube;
 }
 
-// Did union instead of subtraction but its an interesting pattern
+// Did union instead of subtraction accidentally but its an interesting pattern
 
 Union* Composites::cube_pattern(ColData col, float index){
   Intersection* cube = Composites::cube(col, index);
@@ -55,4 +55,17 @@ Subtraction* Composites::triangle_equilateral(ColData col, float index){
 
   Subtraction* sub = new Subtraction({cube, diag1Trans, diag2Trans});
   return sub;
+}
+
+Union* Composites::triforce(ColData col, float index){
+  Subtraction* triangle = Composites::triangle_isosceles(col, index);
+
+  Subtraction* triangle2 = Composites::triangle_isosceles(col, index);
+  Transformation* tritrans = Transformation::Translation(triangle2, -0.65, -0.65, 0);
+
+  Subtraction* triangle3 = Composites::triangle_isosceles(col, index);
+  Transformation* tritrans2 = Transformation::Translation(triangle3, 0.65, -0.65, 0);
+
+  Union* uni = new Union({triangle, tritrans, tritrans2});
+  return uni;
 }

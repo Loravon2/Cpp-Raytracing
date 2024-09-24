@@ -7,4 +7,5 @@ public:
   static Union* cube_pattern(ColData col, float index);
   static Subtraction* triangle_isosceles(ColData col, float index);
   static Subtraction* triangle_equilateral(ColData col, float index);
+  static Union* triforce(ColData col, float index);
 };
