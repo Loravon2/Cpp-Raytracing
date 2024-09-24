@@ -15,6 +15,14 @@ public:
   LightIntensity(float red, float green, float blue);
   LightIntensity();
 
+  static LightIntensity white();
+  static LightIntensity red();
+  static LightIntensity blue();
+  static LightIntensity green();
+  static LightIntensity black();
+  static LightIntensity purple();
+  static LightIntensity gold();
+
   float at(unsigned k);
 
   void operator+=(const LightIntensity& other);
@@ -40,6 +48,16 @@ struct ColData {
 
   ColData(LightIntensity ambient, LightIntensity diffuse, LightIntensity specular, LightIntensity reflected, LightIntensity refracted, float shininess);
   ColData();
+
+  static ColData shiny();
+  static ColData red_flat();
+  static ColData reflective_black();
+  static ColData mirror();
+  static ColData mirror_blue();
+  static ColData mirror_green();
+  static ColData mirror_purple();
+  static ColData gold_flat();
+  static ColData my_back_wall();
 };
 
 class LightSource {

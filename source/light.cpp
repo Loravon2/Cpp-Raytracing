@@ -9,6 +9,33 @@ LightIntensity::LightIntensity(std::array<float, NUM_COL> rgb): rgb(rgb) {
 LightIntensity::LightIntensity(float red, float green, float blue): LightIntensity(std::array<float, NUM_COL>{red, green, blue}) {}
 LightIntensity::LightIntensity(): LightIntensity(0, 0, 0) {}
 
+LightIntensity LightIntensity::white(){
+  return LightIntensity(1, 1, 1);
+}
+
+LightIntensity LightIntensity::red(){
+  return LightIntensity(1, 0, 0);
+}
+
+LightIntensity LightIntensity::blue(){
+  return LightIntensity(0, 0, 1);
+}
+
+LightIntensity LightIntensity::green(){
+  return LightIntensity(0, 1, 0);
+}
+
+LightIntensity LightIntensity::black(){
+  return LightIntensity(0, 0, 0);
+}
+
+LightIntensity LightIntensity::purple(){
+  return LightIntensity(102.0 / 255.0, 51.0 / 255.0, 153.0 / 255.0);
+}
+
+LightIntensity LightIntensity::gold(){
+  return LightIntensity(170.0 / 255.0, 127.0 / 255.0, 46.0 / 255.0);
+}
 
 float LightIntensity::at(unsigned k) {
   return rgb.at(k);
@@ -74,6 +101,41 @@ ColData::ColData():
   ColData(LightIntensity(), LightIntensity(), LightIntensity(), LightIntensity(), LightIntensity(), 0.0)
   {}
 
+ColData ColData::shiny(){
+   return ColData(LightIntensity::white(), LightIntensity::white(), LightIntensity::white(), LightIntensity::white(), LightIntensity::white(), 1);
+ }
+
+ColData ColData::red_flat(){
+  return ColData(LightIntensity::red(), LightIntensity::red(), LightIntensity::red(), LightIntensity::red(), LightIntensity::black(), 2);
+}
+
+ColData ColData::reflective_black(){
+  return ColData(LightIntensity::black(), LightIntensity::black(), LightIntensity::white() * 0.2, LightIntensity::white() * 0.2, LightIntensity::black(), 3);
+}
+
+ColData ColData::mirror(){
+  return ColData(LightIntensity::black(), LightIntensity::black(), LightIntensity::white(), LightIntensity::white(), LightIntensity::black(), 4);
+}
+
+ColData ColData::mirror_blue(){
+  return ColData(LightIntensity::black(), LightIntensity::black(), LightIntensity::blue(), LightIntensity::blue(), LightIntensity::black(), 4);
+}
+
+ColData ColData::mirror_green(){
+  return ColData(LightIntensity::green(), LightIntensity::green(), LightIntensity::green(), LightIntensity::green(), LightIntensity::black(), 4);
+}
+
+ColData ColData::mirror_purple(){
+  return ColData(LightIntensity::black(), LightIntensity::black(), LightIntensity::purple(), LightIntensity::purple(), LightIntensity::black(), 4);
+}
+
+ColData ColData::gold_flat(){
+  return ColData(LightIntensity::gold(), LightIntensity::gold(), LightIntensity::gold(), LightIntensity::gold(), LightIntensity::black(), 2);
+}
+
+ColData ColData::my_back_wall(){
+  return ColData(LightIntensity::white(), LightIntensity::white() * 0.5, LightIntensity::white(), LightIntensity::white(), LightIntensity::blue(), 2);
+}
 
 
 LightSource::LightSource(
