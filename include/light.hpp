@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <array>
-#include <Eigen>
+#include <Dense>
 
 #include "defines.h"
 

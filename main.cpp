@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Dense>
 #include <opencv2/opencv.hpp>
+#include <fstream>
 #include "math.h"
 
 #include <scene.hpp>
@@ -130,34 +131,44 @@ int main() {
   //             black, 1, 7, {source1, source2}, root);
 
   // Square?
-  HalfSpace* right = new HalfSpace(red_flat, 1, Eigen::Vector4f::UnitX());
-  Transformation* T1 = Transformation::Translation(right, 0.5, 0, 0);
+  // HalfSpace* right = new HalfSpace(red_flat, 1, Eigen::Vector4f::UnitX());
+  // Transformation* T1 = Transformation::Translation(right, 0.5, 0, 0);
 
-  HalfSpace* left = new HalfSpace(red_flat, 1, -Eigen::Vector4f::UnitX());
-  Transformation* T2 = Transformation::Translation(left, -0.5, 0, 0);
+  // HalfSpace* left = new HalfSpace(red_flat, 1, -Eigen::Vector4f::UnitX());
+  // Transformation* T2 = Transformation::Translation(left, -0.5, 0, 0);
 
-  HalfSpace* top = new HalfSpace(red_flat, 1, Eigen::Vector4f::UnitY());
-  Transformation* T3 = Transformation::Translation(top, 0, 0.5, 0);
+  // HalfSpace* top = new HalfSpace(red_flat, 1, Eigen::Vector4f::UnitY());
+  // Transformation* T3 = Transformation::Translation(top, 0, 0.5, 0);
 
-  HalfSpace* bottom = new HalfSpace(red_flat, 1, -Eigen::Vector4f::UnitY());
-  Transformation* T4 = Transformation::Translation(bottom, 0, -0.5, 0);
+  // HalfSpace* bottom = new HalfSpace(red_flat, 1, -Eigen::Vector4f::UnitY());
+  // Transformation* T4 = Transformation::Translation(bottom, 0, -0.5, 0);
 
-  HalfSpace* front = new HalfSpace(red_flat, 1, Eigen::Vector4f::UnitZ());
-  Transformation* T5 = Transformation::Translation(front, 0, 0, 0.5);
+  // HalfSpace* front = new HalfSpace(red_flat, 1, Eigen::Vector4f::UnitZ());
+  // Transformation* T5 = Transformation::Translation(front, 0, 0, 0.5);
 
-  HalfSpace* back = new HalfSpace(red_flat, 1, -Eigen::Vector4f::UnitZ());
-  Transformation* T6 = Transformation::Translation(back, 0, 0, -0.5);
+  // HalfSpace* back = new HalfSpace(red_flat, 1, -Eigen::Vector4f::UnitZ());
+  // Transformation* T6 = Transformation::Translation(back, 0, 0, -0.5);
 
-  Intersection* cube = new Intersection({T1, T2, T3, T4, T5, T6});
+  // Intersection* cube = new Intersection({T1, T2, T3, T4, T5, T6});
 
-  Transformation* rot = Transformation::Rotation_Y(cube, M_PI / 5);
+  // Transformation* rot = Transformation::Rotation_Y(cube, M_PI / 5);
 
-  RootObject* root = new RootObject(rot);
+  // RootObject* root = new RootObject(rot);
 
-  LightSource* source1 = new LightSource(Eigen::Vector4f(0, 0, -4, 1), white);
+  // LightSource* source1 = new LightSource(Eigen::Vector4f(0, 0, -4, 1), white);
 
-  Scene scene(64, 3, 2, Eigen::Vector4f(-1.5, -1, -2, 1), Eigen::Vector4f(0, 0, -4, 1), 
-              black, 1, 7, {source1}, root);
+  // Scene scene(64, 3, 2, Eigen::Vector4f(-1.5, -1, -2, 1), Eigen::Vector4f(0, 0, -4, 1), 
+  //             black, 1, 7, {source1}, root);
+
+  std::ifstream inp;
+  inp.open("../test_input.json", std::ios::in);
+
+  if (not inp.is_open()) {
+    std::cout << "cry";
+    exit(1);
+  }
+
+  Scene scene = Scene::read_parameters(inp);
 
   std::cout << "starting:\n";
 
