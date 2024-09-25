@@ -1,0 +1,154 @@
+{
+  "screen": {
+      "dpi": 64,
+      "dimensions": [2, 3],
+      "position": [0, 0, 0],
+      "observer": [1.5, 1, -2]
+  },
+
+  "medium": {
+      "ambient": [0.1, 0.1, 0.1],
+      "index": 1,
+      "recursion": 5
+  },
+
+  "sources": [
+      {
+          "position": [1.5, 1, -2],
+          "intensity": [0.2, 0.3, 1]
+      }
+  ],
+  
+  "objects": [
+    {
+      "translation": {
+        "factors": [1, 1, 4],
+        "subject": {
+          "sphere": {
+            "position": [0, 0, 0],
+            "radius": 1.0,
+            "color": {
+              "ambient": [1, 0, 0],
+              "diffuse": [1, 0, 0],
+              "specular": [1, 0, 0],
+              "reflected": [1, 0, 0],
+              "refracted": [0, 0, 0],
+              "shininess": 2
+            },
+            "index": 4
+          }
+        }
+      }
+    },
+    {
+      "translation": {
+        "factors": [0, 0, 7],
+        "subject": {
+          "halfSpace": {
+            "position": [0, 0, 0],
+            "normal": [0, 0, -1],
+            "color": {
+              "ambient": [0, 0, 0],
+              "diffuse": [0, 0, 0],
+              "specular": [1, 1, 1],
+              "reflected": [1, 1, 1],
+              "refracted": [0, 0, 0],
+              "shininess": 4
+            },
+            "index": 1
+          }
+        }
+      }
+    },
+    {
+      "halfSpace": {
+        "position": [0, 0, 0],
+        "normal": [1, 0, 0],
+        "color": {
+          "ambient": [0, 0, 0],
+          "diffuse": [0, 0, 0],
+          "specular": [0, 0, 1],
+          "reflected": [0, 0, 1],
+          "refracted": [0, 0, 0],
+          "shininess": 4
+        },
+        "index": 1
+      }
+    },
+    {
+      "translation": {
+        "factors": [3, 0, 0],
+        "subject": {
+          "halfSpace": {
+            "position": [0, 0, 0],
+            "normal": [-1, 0, 0],
+            "color": {
+              "ambient": [0, 0, 0],
+              "diffuse": [0, 0, 0],
+              "specular": [0, 1, 0],
+              "reflected": [0, 1, 0],
+              "refracted": [0, 0, 0],
+              "shininess": 4
+            },
+            "index": 1
+          }
+        }
+      }
+    },
+    {
+      "translation": {
+        "factors": [0, 3, 0],
+        "subject": {
+          "halfSpace": {
+            "position": [0, 0, 0],
+            "normal": [0, -1, 0],
+            "color": {
+              "ambient": [0, 0, 0],
+              "diffuse": [0, 0, 0],
+              "specular": [0.4, 0.2, 0.6],
+              "reflected": [0.4, 0.2, 0.6],
+              "refracted": [0, 0, 0],
+              "shininess": 4
+            },
+            "index": 1
+          }
+        }
+      }
+    },
+    {
+      "translation": {
+        "factors": [0, 0, -3],
+        "subject": {
+          "halfSpace": {
+            "position": [0, 0, 0],
+            "normal": [0, 0, 1],
+            "color": {
+              "ambient": [0, 0, 0],
+              "diffuse": [0, 0, 0],
+              "specular": [1, 1, 1],
+              "reflected": [1, 1, 1],
+              "refracted": [0, 0, 0],
+              "shininess": 4
+            },
+            "index": 1
+          }
+        }
+      }
+    },
+    {
+      "halfSpace": {
+        "position": [0, 0, 0],
+        "normal": [0, 1, 0],
+        "color": {
+          "ambient": [0, 0, 0],
+          "diffuse": [0, 0, 0],
+          "specular": [1, 1, 1],
+          "reflected": [1, 1, 1],
+          "refracted": [0, 0, 0],
+          "shininess": 4
+        },
+        "index": 1
+      }
+    }
+  ]
+}
