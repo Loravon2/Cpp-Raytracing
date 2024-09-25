@@ -1,11 +1,11 @@
 #include <scene.hpp>
 
-Scene::Scene(float dpi, float width, float height,
+Scene::Scene(float dpi, float L_x, float L_y,
             Eigen::Vector4f position, Eigen::Vector4f observer,
             LightIntensity ambient_light, float global_index,
             unsigned max_recursion_depth,
             std::vector<LightSource*> sources, RootObject* objects):  
-          dpi(dpi), width(width), height(height), position(position), observer(observer), 
+          dpi(dpi), L_x(L_x), L_y(L_y), position(position), observer(observer), 
           ambient_light(ambient_light), global_index(global_index), object_indexs(), 
           max_recursion_depth(max_recursion_depth), sources(sources), objects(objects)
           {}
@@ -112,18 +112,18 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) {
 
 
 cv::Mat_<cv::Vec3b> Scene::generate() {
-  cv::Mat_<cv::Vec3b> pixel_data(dpi * height, dpi * width);
+  cv::Mat_<cv::Vec3b> pixel_data(dpi * L_x, dpi * L_y);
 
-  for (unsigned i = 0; i < dpi * height; i++) {
-    for (unsigned j = 0; j < dpi * width; j++) {
-      Eigen::Vector4f Pij = position + 1.0 / dpi * (j * Eigen::Vector4f::UnitX() + i * Eigen::Vector4f::UnitY()) + 1 / (2*dpi) * (Eigen::Vector4f::UnitX() + Eigen::Vector4f::UnitY());
+  for (unsigned i = 0; i < dpi * L_x; i++) {
+    for (unsigned j = 0; j < dpi * L_y; j++) {
+      Eigen::Vector4f Pij = position + 1.0 / dpi * (i * Eigen::Vector4f::UnitX() + j * Eigen::Vector4f::UnitY()) + 1 / (2*dpi) * (Eigen::Vector4f::UnitX() + Eigen::Vector4f::UnitY());
       Ray ray(observer, Pij - observer, global_index);
 
       LightIntensity val = trace_ray(ray, 0);
       std::cout << val;
 
       for (unsigned k = 0; k < NUM_COL; k++) {
-        pixel_data(dpi * height - i - 1, j)[k] = 255 * val.at(NUM_COL - k - 1);
+        pixel_data(dpi * L_x - i - 1, j)[k] = 255 * val.at(NUM_COL - k - 1);
       }
     }
   }

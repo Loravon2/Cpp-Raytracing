@@ -161,7 +161,7 @@ int main() {
   //             black, 1, 7, {source1}, root);
 
   std::ifstream inp;
-  inp.open("../test_input.json", std::ios::in);
+  inp.open("../tibauts_example.json", std::ios::in);
 
   if (not inp.is_open()) {
     std::cout << "cry";

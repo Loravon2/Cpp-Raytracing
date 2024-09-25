@@ -37,7 +37,7 @@ private:
   static BaseObject* read_exclusion(nlohmann::json& descr);
   static BaseObject* read_subtraction(nlohmann::json& descr);
 
-  float dpi, width, height;
+  float dpi, L_x, L_y;
 
   Eigen::Vector4f position, observer;
 
@@ -55,7 +55,7 @@ private:
 public:
   static Scene read_parameters(std::istream& input);
   
-  Scene(float dpi, float width, float height,
+  Scene(float dpi, float L_x, float L_y,
         Eigen::Vector4f position, Eigen::Vector4f observer,
         LightIntensity ambient_light, float global_index,
         unsigned max_recursion_depth,
