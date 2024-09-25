@@ -93,7 +93,9 @@ LightSource::LightSource(
 LightSource::LightSource(): LightSource((Eigen::Vector3f) Eigen::Vector3f::Zero(), {0, 0, 0}) {}
 
 LightSource::~LightSource() {
-  std::cout << "Destructing Light Source at " << this << std::endl;
+  #ifdef DEBUG
+    std::cout << "\nDestructing Light Source at " << this << std::endl;
+  #endif
 }
 
 const LightIntensity& LightSource::rgb() const {

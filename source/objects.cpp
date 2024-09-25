@@ -39,7 +39,10 @@ BaseObject::~BaseObject() {}
 RootObject::RootObject(BaseObject* child): child(child) {}
 
 RootObject::~RootObject() {
-  std::cout << "Destructing Root Object at " << this << std::endl;
+  #ifdef DEBUG
+    std::cout << "Destructing Root Object at " << this << std::endl;
+  #endif
+
   delete child;
 }
 
@@ -74,7 +77,9 @@ Primitive::Primitive():
   {}
 
 Primitive::~Primitive() {
-  std::cout << "Destructing Primitive at " << this << std::endl;
+  #ifdef DEBUG
+    std::cout << "Destructing Primitive at " << this << std::endl;
+  #endif
 }
 
 
@@ -185,7 +190,10 @@ Transformation::Transformation(BaseObject* child, Eigen::AngleAxis<float> rotati
 Transformation::Transformation(BaseObject* child, Eigen::Translation<float, 3> translation): child(child), transformation(translation), inverse(translation.inverse()) {}
 
 Transformation::~Transformation() {
-  std::cout << "Destructing Transformation at " << this << std::endl;
+  #ifdef DEBUG
+    std::cout << "Destructing Transformation at " << this << std::endl;
+  #endif
+  
   delete child;
 }
 
@@ -222,7 +230,10 @@ const Eigen::Transform<float, 3, Eigen::Projective>& Transformation::inverse_mat
 Combination::Combination(std::vector<BaseObject*> objects): objects(objects) {}
 
 Combination::~Combination() {
-  std::cout << "Destructing Combination at " << this << std::endl;
+  #ifdef DEBUG
+    std::cout << "Destructing Combination at " << this << std::endl;
+  #endif
+  
   for (BaseObject* O : objects) {
     delete O;
   }

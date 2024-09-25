@@ -37,6 +37,8 @@ private:
   static BaseObject* read_exclusion(nlohmann::json& descr);
   static BaseObject* read_subtraction(nlohmann::json& descr);
 
+  static void progress_bar(float progress);
+
   float dpi, L_x, L_y;
 
   Eigen::Vector4f position, observer;

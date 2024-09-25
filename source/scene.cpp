@@ -11,7 +11,9 @@ Scene::Scene(float dpi, float L_x, float L_y,
           {}
 
 Scene::~Scene() {
-  std::cout << "Destructing Scene at " << this << std::endl;
+  #ifdef DEBUG
+    std::cout << "\nDestructing Scene at " << this << std::endl;
+  #endif
 
   for (LightSource* source : sources) {
     delete source;
@@ -110,6 +112,25 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) {
   return value;
 }
 
+// credit to leemes on stackoverflow for the implementation (https://stackoverflow.com/questions/14539867/how-to-display-a-progress-indicator-in-pure-c-c-cout-printf)
+void Scene::progress_bar(float progress) {
+  std::cout << "[";
+
+  int pos = BAR_WIDTH * progress;
+  for (int i=0; i < BAR_WIDTH; i++) {
+    if (i < pos) {
+      std::cout << "=";
+    }
+    else if (i == pos) {
+      std::cout << ">";
+    }
+    else {
+      std::cout << " ";
+    }
+  }
+
+  std::cout << "] " << int(progress * 100.0) << "%\r" << std::flush;
+}
 
 cv::Mat_<cv::Vec3b> Scene::generate() {
   cv::Mat_<cv::Vec3b> pixel_data(dpi * L_x, dpi * L_y);
@@ -120,13 +141,17 @@ cv::Mat_<cv::Vec3b> Scene::generate() {
       Ray ray(observer, Pij - observer, global_index);
 
       LightIntensity val = trace_ray(ray, 0);
-      std::cout << val;
 
       for (unsigned k = 0; k < NUM_COL; k++) {
         pixel_data(dpi * L_x - i - 1, j)[k] = 255 * val.at(NUM_COL - k - 1);
       }
+
+      float progress = (float) i / (dpi * L_x) + (float) j / (dpi * dpi * L_x * L_y);
+      progress_bar(progress);
     }
   }
+
+  std::cout << std::endl;
 
   return pixel_data;
 }
