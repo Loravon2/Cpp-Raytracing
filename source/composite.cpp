@@ -1,5 +1,19 @@
 #include <composite.hpp>
 
+// Tried to create nebulak but failed have to look at it later 
+
+// Subtraction* Composites::halfsphere(ColData col, float index){
+//   Sphere* sphere = new Sphere(col, index);
+//   Transformation* spheretrans = Transformation::Scaling(sphere, 0.5, 0.5, 0.5);
+
+//   Sphere* subSphere = new Sphere(col, index);
+//   Transformation* spheretrans2 = Transformation::Scaling(subSphere, 0.5, 0.5, 0.5);
+//   Transformation* transsphere = Transformation::Translation(spheretrans2, 0.1, 0.1, 0);
+
+//   Subtraction* sub = new Subtraction({spheretrans, transsphere});
+//   return sub;
+//   }
+
 Intersection* Composites::cube(ColData col, float index){
 
   HalfSpace* right = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));

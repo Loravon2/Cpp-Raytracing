@@ -3,6 +3,7 @@
 
 class Composites: public BaseObject{
 public:
+  // static Subtraction* halfsphere(ColData col, float index);
   static Intersection* cube(ColData col, float index);
   static Union* cube_pattern(ColData col, float index);
   static Subtraction* triangle_isosceles(ColData col, float index);
