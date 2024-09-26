@@ -1,7 +1,7 @@
 #include <scene.hpp>
 
 Scene::Scene(float dpi, float L_x, float L_y,
-            Eigen::Vector4f position, Eigen::Vector4f observer,
+            Eigen::Vector4d position, Eigen::Vector4d observer,
             LightIntensity ambient_light, float global_index,
             unsigned max_recursion_depth,
             std::vector<LightSource*> sources, RootObject* objects):  
@@ -67,9 +67,9 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) {
   LightIntensity value = texture.ambient * ambient_light;
   
   for (LightSource* ls : sources) {
-    Eigen::Vector4f light_dir = ls->pos() - ip.point;
+    Eigen::Vector4d light_dir = ls->pos() - ip.point;
 
-    if (light_dir == Eigen::Vector4f::Zero()) {
+    if (light_dir == Eigen::Vector4d::Zero()) {
       continue;
     }
 
@@ -82,10 +82,10 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) {
 
     Ray light_reflection = (-light_connection).reflect(ip.point, ip.normal);
 
-    value += texture.diffuse * ls->rgb() * abs(light_connection.direction().dot(ip.normal));// * (1 / light_dir.norm()) * (1 / light_dir.norm()); //might wanna think about that if we want to add inverse square law (maybe scaled by some coefficient?)
+    value += texture.diffuse * ls->rgb() * abs(light_connection.direction().dot(ip.normal));
 
     if (light_reflection.direction().dot((-ray).direction()) > 0) {
-      value += texture.specular * ls->rgb() * powf32(light_reflection.direction().dot((-ray).direction()), texture.shininess);// * (1 / light_dir.norm()) * (1 / light_dir.norm());
+      value += texture.specular * ls->rgb() * (double) powf64(light_reflection.direction().dot((-ray).direction()), texture.shininess);
     }
   }
 
@@ -100,7 +100,7 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) {
     exit(1);
   }
 
-  if (ray.index() < index || acosf32(ray.direction().dot(ip.normal)) < asinf32(ray.index() / index)) { // otherwise we have total reflection
+  if (ray.index() < index || acosf64(ray.direction().dot(ip.normal)) < asinf64(ray.index() / index)) { // otherwise we have total reflection
     Ray refraction = ray.refract(ip.point, ip.normal, index);
     value += texture.refracted * trace_ray(refraction, depth+1);
     if(value.at(0) < -EPSILON) {
@@ -137,7 +137,7 @@ cv::Mat_<cv::Vec3b> Scene::generate() {
 
   for (unsigned i = 0; i < dpi * L_x; i++) {
     for (unsigned j = 0; j < dpi * L_y; j++) {
-      Eigen::Vector4f Pij = position + 1.0 / dpi * (i * Eigen::Vector4f::UnitX() + j * Eigen::Vector4f::UnitY()) + 1 / (2*dpi) * (Eigen::Vector4f::UnitX() + Eigen::Vector4f::UnitY());
+      Eigen::Vector4d Pij = position + 1.0 / dpi * (i * Eigen::Vector4d::UnitX() + j * Eigen::Vector4d::UnitY()) + 1 / (2*dpi) * (Eigen::Vector4d::UnitX() + Eigen::Vector4d::UnitY());
       Ray ray(observer, Pij - observer, global_index);
 
       LightIntensity val = trace_ray(ray, 0);

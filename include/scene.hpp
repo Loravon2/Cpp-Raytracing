@@ -18,7 +18,7 @@
 class Scene {
 private:
   typedef BaseObject* (*action_t)(nlohmann::json&);
-  typedef Transformation* (*rotation_t)(BaseObject*, float);
+  typedef Transformation* (*rotation_t)(BaseObject*, double);
   static const std::map<std::string, action_t> action_handler;
   static const std::array<rotation_t, 3> rotation_handler;
 
@@ -41,7 +41,7 @@ private:
 
   float dpi, L_x, L_y;
 
-  Eigen::Vector4f position, observer;
+  Eigen::Vector4d position, observer;
 
   LightIntensity ambient_light;
   float global_index;
@@ -58,7 +58,7 @@ public:
   static Scene read_parameters(std::istream& input);
   
   Scene(float dpi, float L_x, float L_y,
-        Eigen::Vector4f position, Eigen::Vector4f observer,
+        Eigen::Vector4d position, Eigen::Vector4d observer,
         LightIntensity ambient_light, float global_index,
         unsigned max_recursion_depth,
         std::vector<LightSource*> sources, RootObject* objects);
