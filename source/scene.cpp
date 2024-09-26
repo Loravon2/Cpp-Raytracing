@@ -73,11 +73,23 @@ LightIntensity Scene::trace_ray(const Ray& ray, unsigned depth) {
       continue;
     }
 
-    Ray light_connection(ip.point, light_dir, ray.index());
+    Ray light_connection;
+    // to combat shadow acne
+    Ray light_connection1(ip.point + EPSILON * ip.normal, light_dir, ray.index());
+    Ray light_connection2(ip.point - EPSILON * ip.normal, light_dir, ray.index()); // if light source is inside object
 
-    IntersectionPoint light_ip;
-    if (objects->intersect(light_connection, &light_ip) && light_ip.distance < light_dir.norm()) {
-      continue;
+    IntersectionPoint light_ip1; IntersectionPoint light_ip2;
+    if (objects->intersect(light_connection1, &light_ip1) && light_ip1.distance < light_dir.norm()) {
+      // light_ip1 is discarded
+      if (objects->intersect(light_connection2, &light_ip2) && light_ip2.distance < light_dir.norm()) {
+        // both are not valid
+        continue;
+      }
+
+      light_connection = light_connection2;
+    }
+    else {
+      light_connection = light_connection1;
     }
 
     Ray light_reflection = (-light_connection).reflect(ip.point, ip.normal);
