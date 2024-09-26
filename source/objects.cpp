@@ -145,6 +145,7 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen:
   
   if (normal.dot(modified.direction()) == 0) return false;
 
+<<<<<<< HEAD
   double t = normal.dot(Eigen::Vector3d::Zero().homogeneous() - modified.start_point()) / normal.dot(modified.direction());
   
   if (t <= 0) return false;
@@ -154,6 +155,19 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen:
   bool inside = false;
   if (this->normal.dot(modified.direction()) > 0) {
     inside = true;
+=======
+  float t = normal.dot(Eigen::Vector3f::Zero().homogeneous() - modified.start_point()) / normal.dot(modified.direction());
+  
+  if (t <= 0) return false;
+
+  Eigen::Vector4f P = modified.start_point() + t * modified.direction();
+
+  if (this->included(r.start_point(), inverse_transform)) {
+    dest.push_back(IntersectionPoint(P, normal, col, 1.0, t)); //THIS IS WERE WE NEED TO FIND THE INDEX OF THE WRAPPING OBJECT
+  }
+  else {
+    dest.push_back(IntersectionPoint(P, -normal, col, index, t));
+>>>>>>> 07365f0 (made composite for cube)
   }
 
   dest.push_back(IntersectionPoint(P, normal, col, index, t, inside));
@@ -164,7 +178,11 @@ bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen:
 bool HalfSpace::included(const Eigen::Vector4d& point, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform) const {
   Eigen::Vector4d modified = inverse_transform * point;
   
+<<<<<<< HEAD
   return normal.dot(Eigen::Vector3d::Zero().homogeneous() - modified) > 0;
+=======
+  return normal.dot(Eigen::Vector3f::Zero().homogeneous() - modified) > 0;
+>>>>>>> 07365f0 (made composite for cube)
 }
 
 Cylinder::Cylinder(ColData col, float index):
@@ -335,7 +353,11 @@ bool Intersection::intersect(const Ray& r, const Eigen::Transform<double, 3, Eig
           continue;
         }
 
+<<<<<<< HEAD
         if (!O2->included(p.point)) {
+=======
+        if (!O2->included(p.point, inverse_transform)) {
+>>>>>>> 07365f0 (made composite for cube)
           available = false;
           break;
         }

@@ -1,6 +1,6 @@
 #include <composite.hpp>
 
-Intersection* Composites::cube(ColData col, float index){
+BaseObject* Composites::cube(ColData col, float index){
 
   HalfSpace* right = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
   HalfSpace* up = new HalfSpace(col, index, Eigen::Vector4f(0, 1, 0, 0));
