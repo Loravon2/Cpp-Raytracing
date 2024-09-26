@@ -4,10 +4,10 @@ using json = nlohmann::json;
 
 const std::map<std::string, Scene::action_t> Scene::action_handler = {
   {"sphere", &Scene::read_sphere},              {"halfSpace", &Scene::read_half_space},
-  {"scaling", &Scene::read_scaling},            {"rotation", &Scene::read_rotation},
-  {"translation", &Scene::read_translation},    {"union", &Scene::read_union},
-  {"intersection", &Scene::read_intersection},  {"exclusion", &Scene::read_exclusion},
-  {"subtraction", &Scene::read_subtraction}
+  {"cylinder", &Scene::read_cylinder},          {"scaling", &Scene::read_scaling},            
+  {"rotation", &Scene::read_rotation},          {"translation", &Scene::read_translation},    
+  {"union", &Scene::read_union},                {"intersection", &Scene::read_intersection},
+  {"exclusion", &Scene::read_exclusion},        {"subtraction", &Scene::read_subtraction}
 };
 
 const std::array<Scene::rotation_t, 3> Scene::rotation_handler = {
@@ -78,6 +78,36 @@ BaseObject* Scene::read_half_space(nlohmann::json& descr) {
   Eigen::Vector4d normal(normal_arr[0], normal_arr[1], normal_arr[2], 0);
 
   BaseObject* obj = new HalfSpace(col, ind, normal);
+
+  std::array<double, 3> pos = descr.at("position");
+  if (pos[0] != 0 or pos[1] != 0 or pos[2] != 0) {
+    obj = Transformation::Translation(obj, pos[0], pos[1], pos[2]);
+  }
+
+  return obj;
+}
+
+BaseObject* Scene::read_cylinder(nlohmann::json& descr) {
+  ColData col = read_col_data(descr.at("color"));
+  float ind = descr.at("index");
+
+  BaseObject* obj = new Cylinder(col, ind);
+
+  double rad = descr.at("radius");
+  if (rad != 1.0) {
+    obj = Transformation::Scaling(obj, rad, rad, 1);
+  }
+
+  std::array<double, 3> axis_arr = descr.at("axis");
+  Eigen::Vector3d axis(axis_arr[0], axis_arr[1], axis_arr[2]);
+  axis.normalize();
+  if((abs(Eigen::Vector3d::UnitZ().dot(axis)) < 1 - EPSILON) or (abs(Eigen::Vector3d::UnitZ().dot(axis)) > 1 + EPSILON)) {
+    double alpha = asinf64(- axis[1]);
+    double beta = asinf64(axis[0] / cosf64(alpha));
+
+    obj = Transformation::Rotation_X(obj, alpha);
+    obj = Transformation::Rotation_Y(obj, beta);
+  }
 
   std::array<double, 3> pos = descr.at("position");
   if (pos[0] != 0 or pos[1] != 0 or pos[2] != 0) {

@@ -29,6 +29,7 @@ private:
 
   static BaseObject* read_sphere(nlohmann::json& descr);
   static BaseObject* read_half_space(nlohmann::json& descr);
+  static BaseObject* read_cylinder(nlohmann::json& descr);
   static BaseObject* read_scaling(nlohmann::json& descr);
   static BaseObject* read_rotation(nlohmann::json& descr);
   static BaseObject* read_translation(nlohmann::json& descr);

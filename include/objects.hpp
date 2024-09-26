@@ -96,7 +96,15 @@ public:
   virtual bool included(const Eigen::Vector4d& point, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform) const override;
 };
 
-//space for more primitives :}
+class Cylinder: public Primitive {
+public:
+  Cylinder(ColData col, float index);
+  Cylinder();
+
+  virtual bool intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const override;
+
+  virtual bool included(const Eigen::Vector4d& point, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform) const override;
+};
 
 
 class Transformation: public BaseObject {

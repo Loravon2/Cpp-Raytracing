@@ -102,7 +102,7 @@ bool Sphere::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen::Pr
 
   bool found = false;
 
-  std::array<double, 2> t_arr = {dot + sqrtf(delta), dot - sqrtf(delta)};
+  std::array<double, 2> t_arr = {dot + sqrtf64(delta), dot - sqrtf64(delta)};
   for (double t : t_arr) {
     if (t > 0) {
       Eigen::Vector4d P = modified.start_point() + t * modified.direction();
@@ -166,6 +166,62 @@ bool HalfSpace::included(const Eigen::Vector4d& point, const Eigen::Transform<do
   
   return normal.dot(Eigen::Vector3d::Zero().homogeneous() - modified) > 0;
 }
+
+Cylinder::Cylinder(ColData col, float index):
+  Primitive(col, index)
+  {}
+
+Cylinder::Cylinder(): 
+  Cylinder(ColData(), 1.0)
+  {}
+
+bool Cylinder::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
+  Ray modified = inverse_transform * r;
+
+  Eigen::Vector2d projected_P(modified.start_point()[0], modified.start_point()[1]);
+  Eigen::Vector2d projected_d(modified.direction()[0], modified.direction()[1]);
+
+  if ((projected_d.norm() >= 0 - EPSILON) and (projected_d.norm() <= 0 + EPSILON)) {
+    return false;
+  }
+
+  double term1 = projected_P.dot(projected_d) / (projected_d.norm() * projected_d.norm());
+  double term2 = (projected_P.norm() * projected_P.norm() - 1) / (projected_d.norm() * projected_d.norm());
+
+  if ((term1 * term1 - term2) < 0 + EPSILON) {
+    return false;
+  }
+
+  bool found = false;
+
+  std::array<double, 2> t_arr = {-term1 - sqrtf64(term1 * term1 - term2), -term1 + sqrtf64(term1 * term1 - term2)};
+  
+  for (double t : t_arr) {
+    if (t < 0) {
+      continue;
+    }
+
+    Eigen::Vector4d P = modified.start_point() + t * modified.direction();
+    Eigen::Vector4d normal(P[0], P[1], 0, 0);
+
+    bool inside = false;
+    if (normal.dot(modified.direction()) > 0) {
+      inside = true;
+    }
+
+    dest.push_back(IntersectionPoint(P, normal, col, index, t, inside));
+    found = true;
+  }
+
+  return found;
+}
+
+bool Cylinder::included(const Eigen::Vector4d& point, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform) const {
+  Eigen::Vector4d modified = inverse_transform * point;
+
+  return ((modified[0] * modified[0] + modified[1] * modified[1]) < 1); 
+}
+
 
 Transformation* Transformation::Scaling(BaseObject* child, double ax, double ay, double az) {
   return new Transformation(child, Eigen::DiagonalMatrix<double, 3>(ax, ay, az));
