@@ -22,8 +22,10 @@ private:
   typedef Transformation* (*rotation_t)(BaseObject*, double);
   static const std::map<std::string, action_t> action_handler;
   static const std::array<rotation_t, 3> rotation_handler;
+  static const std::map<std::string, LightIntensity> color_handler;
 
   static LightSource* read_source(nlohmann::json& descr);
+  static LightIntensity read_color(nlohmann::json& descr);
 
   static ColData read_col_data(nlohmann::json& descr);
   static std::vector<BaseObject*> read_obj_list(nlohmann::json& descr);

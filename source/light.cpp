@@ -9,62 +9,9 @@ LightIntensity::LightIntensity(std::array<float, NUM_COL> rgb): rgb(rgb) {
 LightIntensity::LightIntensity(float red, float green, float blue): LightIntensity(std::array<float, NUM_COL>{red, green, blue}) {}
 LightIntensity::LightIntensity(): LightIntensity(0, 0, 0) {}
 
-inline LightIntensity LightIntensity::black() {
-  return LightIntensity(0, 0, 0);
-}
-inline LightIntensity LightIntensity::silver() {
-  return LightIntensity(192.0 / 255.0, 192.0 / 255.0, 192.0 / 255.0);
-}
-inline LightIntensity LightIntensity::gray() {
-  return LightIntensity(128.0 / 255.0, 128.0 / 255.0, 128.0 / 255.0);
-}
-inline LightIntensity LightIntensity::white() {
-  return LightIntensity(1, 1, 1);
-}
-inline LightIntensity LightIntensity::maroon() {
-  return LightIntensity(128.0 / 255.0, 0, 0);
-}
-inline LightIntensity LightIntensity::red() {
-  return LightIntensity(1, 0, 0);
-}
-inline LightIntensity LightIntensity::purple() {
-  return LightIntensity(128.0 / 255.0, 0, 128.0 / 255.0);
-}
-inline LightIntensity LightIntensity::fuchsia() {
-  return LightIntensity(1, 0, 1);
-}
-inline LightIntensity LightIntensity::green() {
-  return LightIntensity(0, 128.0 / 255.0, 0);
-}
-inline LightIntensity LightIntensity::lime() {
-  return LightIntensity(0, 1, 0);
-}
-inline LightIntensity LightIntensity::olive() {
-  return LightIntensity(128.0 / 255.0, 128.0 / 255.0, 0);
-}
-inline LightIntensity LightIntensity::yellow() {
-  return LightIntensity(1, 1, 0);
-}
-inline LightIntensity LightIntensity::navy() {
-  return LightIntensity(0, 0, 128.0 / 255.0);
-}
-inline LightIntensity LightIntensity::blue() {
-  return LightIntensity(0, 0, 1);
-}
-inline LightIntensity LightIntensity::teal() {
-  return LightIntensity(0, 128.0 / 255.0, 128.0 / 255.0);
-}
-inline LightIntensity LightIntensity::aqua() {
-  return LightIntensity(0, 1, 1);
-}
-inline LightIntensity LightIntensity::gold() {
-  return LightIntensity(170.0 / 255.0, 127.0 / 255.0, 46.0 / 255.0);
-}
-
 float LightIntensity::at(unsigned k) {
   return rgb.at(k);
 }
-
 
 void LightIntensity::operator+=(const LightIntensity& other) {
   for (unsigned i = 0; i < NUM_COL; i++) {

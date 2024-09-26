@@ -18,6 +18,18 @@ const std::array<Scene::rotation_t, 3> Scene::rotation_handler = {
   &Transformation::Rotation_Z
 };
 
+const std::map<std::string, LightIntensity> Scene::color_handler = {
+  {"black", LightIntensity::black()},           {"silver", LightIntensity::silver()},
+  {"gray", LightIntensity::gray()},             {"white", LightIntensity::white()},
+  {"maroon", LightIntensity::maroon()},         {"red", LightIntensity::red()},
+  {"purple", LightIntensity::purple()},         {"fuchsia", LightIntensity::fuchsia()},
+  {"green", LightIntensity::green()},           {"lime", LightIntensity::lime()},
+  {"olive", LightIntensity::olive()},           {"yellow", LightIntensity::yellow()},
+  {"navy", LightIntensity::navy()},             {"blue", LightIntensity::blue()},
+  {"teal", LightIntensity::teal()},             {"aqua", LightIntensity::aqua()},
+  {"gold", LightIntensity::gold()}
+};
+
 
 LightSource* Scene::read_source(nlohmann::json& descr) {
   std::array<double, 3> raw_pos = descr.at("position");
@@ -30,12 +42,26 @@ LightSource* Scene::read_source(nlohmann::json& descr) {
   return source;
 }
 
+LightIntensity Scene::read_color(nlohmann::json& descr) {
+  try {
+    if (descr.is_array()) {
+      return LightIntensity(descr);  
+    }
+
+    return color_handler.at(descr);
+  }
+  catch (json::type_error&) {
+    std::cout << "WARNING : Could not parse color correctly: " << descr << ".\nDefaulting to black." << std::endl;
+    return LightIntensity(0, 0, 0);
+  }
+}
+
 ColData Scene::read_col_data(nlohmann::json& descr) {
-  LightIntensity amb(descr.at("ambient"));
-  LightIntensity diff(descr.at("diffuse"));
-  LightIntensity spec(descr.at("specular"));
-  LightIntensity refl(descr.at("reflected"));
-  LightIntensity refr(descr.at("refracted"));
+  LightIntensity amb = read_color(descr.at("ambient"));
+  LightIntensity diff = read_color(descr.at("diffuse"));
+  LightIntensity spec = read_color(descr.at("specular"));
+  LightIntensity refl = read_color(descr.at("reflected"));
+  LightIntensity refr = read_color(descr.at("refracted"));
   float shiny = descr.at("shininess");
 
   return ColData(amb, diff, spec, refl, refr, shiny);
@@ -122,7 +148,7 @@ BaseObject* Scene::read_cylinder(nlohmann::json& descr) {
 BaseObject* Scene::read_scaling(nlohmann::json& descr) {
   std::array<double, 3> fac = descr.at("factors");
 
-  auto j = descr["subject"].begin();
+  auto j = descr.at("subject").begin();
   BaseObject* subj = action_handler.at(j.key())(j.value());
 
   BaseObject* obj = Transformation::Scaling(subj, fac[0], fac[1], fac[2]);
@@ -131,10 +157,10 @@ BaseObject* Scene::read_scaling(nlohmann::json& descr) {
 }
 
 BaseObject* Scene::read_rotation(nlohmann::json& descr) {
-  double ang = descr["angle"].get<double>() / 180.0 * M_PI;
-  unsigned dir = descr["direction"];
+  double ang = descr.at("angle").get<double>() / 180.0 * M_PI;
+  unsigned dir = descr.at("direction");
 
-  auto j = descr["subject"].begin();
+  auto j = descr.at("subject").begin();
   BaseObject* subj = action_handler.at(j.key())(j.value());
 
   BaseObject* obj = rotation_handler.at(dir)(subj, ang);
@@ -145,7 +171,7 @@ BaseObject* Scene::read_rotation(nlohmann::json& descr) {
 BaseObject* Scene::read_translation(nlohmann::json& descr) {
   std::array<double, 3> fac = descr.at("factors");
 
-  auto j = descr["subject"].begin();
+  auto j = descr.at("subject").begin();
   BaseObject* subj = action_handler.at(j.key())(j.value());
 
   BaseObject* obj = Transformation::Translation(subj, fac[0], fac[1], fac[2]);

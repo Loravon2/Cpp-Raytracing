@@ -15,23 +15,57 @@ public:
   LightIntensity(float red, float green, float blue);
   LightIntensity();
 
-  inline static LightIntensity black();
-  inline static LightIntensity silver();
-  inline static LightIntensity gray();
-  inline static LightIntensity white();
-  inline static LightIntensity maroon();
-  inline static LightIntensity red();
-  inline static LightIntensity purple();
-  inline static LightIntensity fuchsia();
-  inline static LightIntensity green();
-  inline static LightIntensity lime();
-  inline static LightIntensity olive();
-  inline static LightIntensity yellow();
-  inline static LightIntensity navy();
-  inline static LightIntensity blue();
-  inline static LightIntensity teal();
-  inline static LightIntensity aqua();
-  inline static LightIntensity gold();
+  inline static LightIntensity black() {
+    return LightIntensity(0, 0, 0);
+  }
+  inline static LightIntensity silver() {
+    return LightIntensity(192.0 / 255.0, 192.0 / 255.0, 192.0 / 255.0);
+  }
+  inline static LightIntensity gray() {
+    return LightIntensity(128.0 / 255.0, 128.0 / 255.0, 128.0 / 255.0);
+  }
+  inline static LightIntensity white() {
+    return LightIntensity(1, 1, 1);
+  }
+  inline static LightIntensity maroon() {
+    return LightIntensity(128.0 / 255.0, 0, 0);
+  }
+  inline static LightIntensity red() {
+    return LightIntensity(1, 0, 0);
+  }
+  inline static LightIntensity purple() {
+    return LightIntensity(128.0 / 255.0, 0, 128.0 / 255.0);
+  }
+  inline static LightIntensity fuchsia() {
+    return LightIntensity(1, 0, 1);
+  }
+  inline static LightIntensity green() {
+    return LightIntensity(0, 128.0 / 255.0, 0);
+  }
+  inline static LightIntensity lime() {
+    return LightIntensity(0, 1, 0);
+  }
+  inline static LightIntensity olive() {
+    return LightIntensity(128.0 / 255.0, 128.0 / 255.0, 0);
+  }
+  inline static LightIntensity yellow() {
+    return LightIntensity(1, 1, 0);
+  }
+  inline static LightIntensity navy() {
+    return LightIntensity(0, 0, 128.0 / 255.0);
+  }
+  inline static LightIntensity blue() {
+    return LightIntensity(0, 0, 1);
+  }
+  inline static LightIntensity teal() {
+    return LightIntensity(0, 128.0 / 255.0, 128.0 / 255.0);
+  }
+  inline static LightIntensity aqua() {
+    return LightIntensity(0, 1, 1);
+  }
+  inline static LightIntensity gold() {
+    return LightIntensity(170.0 / 255.0, 127.0 / 255.0, 46.0 / 255.0);
+  }
 
   float at(unsigned k);
 
