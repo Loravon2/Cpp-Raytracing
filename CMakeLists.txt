@@ -8,21 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 
-find_package(OpenCV 4.10.0 QUIET)
+find_package(OpenCV 4 REQUIRED)
 find_package(Eigen3 4.90 QUIET)
 find_package(nlohmann_json 3.11.3 QUIET)
 
 include(FetchContent)
-
-if(NOT OpenCV_FOUND)
-  FetchContent_Declare(
-    OpenCV
-    GIT_REPOSITORY  https://github.com/opencv/opencv.git
-    GIT_TAG         71d3237a093b60a27601c20e9ee6c3e52154e8b1
-  )
-
-  FetchContent_MakeAvailable(OpenCV)
-endif()
 
 if(NOT Eigen3_FOUND)
   FetchContent_Declare(
