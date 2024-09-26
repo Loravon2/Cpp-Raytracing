@@ -22,6 +22,7 @@ public:
   static LightIntensity black();
   static LightIntensity purple();
   static LightIntensity gold();
+  static LightIntensity dark_purple();
 
   float at(unsigned k);
 
@@ -57,6 +58,8 @@ struct ColData {
   static ColData mirror_green();
   static ColData mirror_purple();
   static ColData gold_flat();
+  static ColData dark_purple_flat();
+  static ColData white_flat();
   static ColData my_back_wall();
 };
 

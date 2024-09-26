@@ -1,7 +1,6 @@
 #include <composite.hpp>
 
-BaseObject* Composites::cube(ColData col, float index){
-
+BaseObject* Composites::Cube(ColData col, float index){
   HalfSpace* right = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
   HalfSpace* up = new HalfSpace(col, index, Eigen::Vector4f(0, 1, 0, 0));
   HalfSpace* front = new HalfSpace(col, index, Eigen::Vector4f(0, 0, 1, 0));
@@ -9,21 +8,20 @@ BaseObject* Composites::cube(ColData col, float index){
   HalfSpace* down = new HalfSpace(col, index, Eigen::Vector4f(0, -1, 0, 0));
   HalfSpace* left = new HalfSpace(col, index, Eigen::Vector4f(-1, 0, 0, 0));
 
-  Transformation* RightTrans = Transformation::Translation(right, 0.5, 0, 0);
-  Transformation* UpTrans = Transformation::Translation(up, 0, 0.5, 0);
-  Transformation* FrontTrans = Transformation::Translation(front, 0, 0, 0.5);
-  Transformation* BackTrans = Transformation::Translation(back, 0, 0, -0.5);
-  Transformation* DownTrans = Transformation::Translation(down, 0, -0.5, 0);
-  Transformation* LeftTrans = Transformation::Translation(left, -0.5, 0, 0);
+  Transformation* right_trans = Transformation::Translation(right, 0.5, 0, 0);
+  Transformation* up_trans = Transformation::Translation(up, 0, 0.5, 0);
+  Transformation* front_trans = Transformation::Translation(front, 0, 0, 0.5);
+  Transformation* back_trans = Transformation::Translation(back, 0, 0, -0.5);
+  Transformation* down_trans = Transformation::Translation(down, 0, -0.5, 0);
+  Transformation* left_trans = Transformation::Translation(left, -0.5, 0, 0);
 
-  Intersection * Cube = new Intersection({RightTrans, UpTrans, FrontTrans, BackTrans, DownTrans, LeftTrans});
-  return Cube;
+  Intersection * cube = new Intersection({right_trans, up_trans, front_trans, back_trans, down_trans, left_trans});
+  return cube;
 }
 
-// Did union instead of subtraction accidentally but its an interesting pattern
 
-Union* Composites::cube_pattern(ColData col, float index){
-  Intersection* cube = Composites::cube(col, index);
+BaseObject* Composites::Cube_Pattern(ColData col, float index){
+  BaseObject* cube = Composites::Cube(col, index);
   HalfSpace* diag1 = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
   HalfSpace* diag2 = new HalfSpace(col, index, Eigen::Vector4f(-1, 0, 0, 0));
   
@@ -35,18 +33,18 @@ Union* Composites::cube_pattern(ColData col, float index){
 }
 
 
-Subtraction* Composites::triangle_isosceles(ColData col, float index){
-   Intersection* cube1 = Composites::cube(col, index);
-   Transformation* cubetrans = Transformation::Rotation_Z(cube1, M_PI_4);
-   HalfSpace* diag = new HalfSpace(col, index, Eigen::Vector4f(0, 1, 0, 0));
-   
-   Subtraction* tri = new Subtraction({cubetrans, diag});
-   return tri;
+BaseObject* Composites::Triangle_Isosceles(ColData col, float index){
+  BaseObject* cube1 = Composites::Cube(col, index);
+  Transformation* cubetrans = Transformation::Rotation_Z(cube1, M_PI_4);
+  HalfSpace* diag = new HalfSpace(col, index, Eigen::Vector4f(0, 1, 0, 0));
+  
+  Subtraction* tri = new Subtraction({cubetrans, diag});
+  return tri;
 }
 
 //Dont know about this one. doesnt really work how i imagined it (i think?)
-Subtraction* Composites::triangle_equilateral(ColData col, float index){
-  Intersection* cube = Composites::cube(col, index);
+BaseObject* Composites::Triangle_Equilateral(ColData col, float index){
+  BaseObject* cube = Composites::Cube(col, index);
   HalfSpace* diag1 = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
   HalfSpace* diag2 = new HalfSpace(col, index, Eigen::Vector4f(-1, 0, 0, 0));
   
@@ -57,13 +55,13 @@ Subtraction* Composites::triangle_equilateral(ColData col, float index){
   return sub;
 }
 
-Union* Composites::triforce(ColData col, float index){
-  Subtraction* triangle = Composites::triangle_isosceles(col, index);
+BaseObject* Composites::Triforce(ColData col, float index){
+  BaseObject* triangle = Composites::Triangle_Isosceles(col, index);
 
-  Subtraction* triangle2 = Composites::triangle_isosceles(col, index);
+  BaseObject* triangle2 = Composites::Triangle_Isosceles(col, index);
   Transformation* tritrans = Transformation::Translation(triangle2, -0.65, -0.65, 0);
 
-  Subtraction* triangle3 = Composites::triangle_isosceles(col, index);
+  BaseObject* triangle3 = Composites::Triangle_Isosceles(col, index);
   Transformation* tritrans2 = Transformation::Translation(triangle3, 0.65, -0.65, 0);
 
   Union* uni = new Union({triangle, tritrans, tritrans2});

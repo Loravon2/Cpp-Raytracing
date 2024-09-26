@@ -37,6 +37,10 @@ LightIntensity LightIntensity::gold(){
   return LightIntensity(170.0 / 255.0, 127.0 / 255.0, 46.0 / 255.0);
 }
 
+LightIntensity LightIntensity::dark_purple(){
+  return LightIntensity(91.0 / 255.0, 10.0 / 255.0, 145.0 / 255.0);
+}
+
 float LightIntensity::at(unsigned k) {
   return rgb.at(k);
 }
@@ -131,6 +135,14 @@ ColData ColData::mirror_purple(){
 
 ColData ColData::gold_flat(){
   return ColData(LightIntensity::gold(), LightIntensity::gold(), LightIntensity::gold(), LightIntensity::gold(), LightIntensity::black(), 2);
+}
+
+ColData ColData::dark_purple_flat(){
+  return ColData(LightIntensity::dark_purple(), LightIntensity::dark_purple(), LightIntensity::dark_purple(), LightIntensity::dark_purple(), LightIntensity::black(), 2);
+}
+
+ColData ColData::white_flat(){
+  return ColData(LightIntensity::white(), LightIntensity::white(), LightIntensity::white(), LightIntensity::white(), LightIntensity::black(), 2);
 }
 
 ColData ColData::my_back_wall(){

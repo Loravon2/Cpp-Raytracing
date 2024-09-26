@@ -1,11 +1,12 @@
 #pragma once
 #include <objects.hpp>
 
-class Composites: public BaseObject{
+class Composites {
 public:
-  static Intersection* cube(ColData col, float index);
-  static Union* cube_pattern(ColData col, float index);
-  static Subtraction* triangle_isosceles(ColData col, float index);
-  static Subtraction* triangle_equilateral(ColData col, float index);
-  static Union* triforce(ColData col, float index);
+  // static Subtraction* halfsphere(ColData col, float index);
+  static BaseObject* Cube(ColData col, float index);
+  static BaseObject* Cube_Pattern(ColData col, float index);
+  static BaseObject* Triangle_Isosceles(ColData col, float index);
+  static BaseObject* Triangle_Equilateral(ColData col, float index);
+  static BaseObject* Triforce(ColData col, float index);
 };
