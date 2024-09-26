@@ -7,6 +7,6 @@
 #define EPSILON 0.00001
 #define NUM_COL 3
 
-#define NUM_EXAMPLES 3
+#define NUM_EXAMPLES 4
 
 #define BAR_WIDTH 70

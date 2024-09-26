@@ -13,6 +13,7 @@
 #include <objects.hpp>
 #include <light.hpp>
 #include <ray.hpp>
+#include <composite.hpp>
 #include "defines.h"
 
 class Scene {
@@ -30,13 +31,20 @@ private:
   static BaseObject* read_sphere(nlohmann::json& descr);
   static BaseObject* read_half_space(nlohmann::json& descr);
   static BaseObject* read_cylinder(nlohmann::json& descr);
+
   static BaseObject* read_scaling(nlohmann::json& descr);
   static BaseObject* read_rotation(nlohmann::json& descr);
   static BaseObject* read_translation(nlohmann::json& descr);
+
   static BaseObject* read_union(nlohmann::json& descr);
   static BaseObject* read_intersection(nlohmann::json& descr);
   static BaseObject* read_exclusion(nlohmann::json& descr);
   static BaseObject* read_subtraction(nlohmann::json& descr);
+
+  static BaseObject* read_cube(nlohmann::json& descr);
+  static BaseObject* read_prism(nlohmann::json& descr);
+  static BaseObject* read_triforce(nlohmann::json& descr);
+
 
   static void progress_bar(float progress);
 

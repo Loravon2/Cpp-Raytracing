@@ -7,7 +7,9 @@ const std::map<std::string, Scene::action_t> Scene::action_handler = {
   {"cylinder", &Scene::read_cylinder},          {"scaling", &Scene::read_scaling},            
   {"rotation", &Scene::read_rotation},          {"translation", &Scene::read_translation},    
   {"union", &Scene::read_union},                {"intersection", &Scene::read_intersection},
-  {"exclusion", &Scene::read_exclusion},        {"subtraction", &Scene::read_subtraction}
+  {"exclusion", &Scene::read_exclusion},        {"subtraction", &Scene::read_subtraction},
+  {"cube", &Scene::read_cube},                  {"prism", &Scene::read_prism},
+  {"triforce", &Scene::read_triforce}
 };
 
 const std::array<Scene::rotation_t, 3> Scene::rotation_handler = {
@@ -183,6 +185,52 @@ BaseObject* Scene::read_subtraction(nlohmann::json& descr) {
   return obj;
 }
 
+BaseObject* Scene::read_cube(nlohmann::json& descr) {
+  ColData col = read_col_data(descr.at("color"));
+  float ind = descr.at("index");
+
+  BaseObject* obj = Composites::Cube(col, ind);
+
+  std::array<double, 3> dim = descr.at("dimensions");
+  if (dim[0] != 0 or dim[1] != 0 or dim[2] != 0) {
+    obj = Transformation::Scaling(obj, dim[0], dim[1], dim[2]);
+  }
+
+  std::array<double, 3> pos = descr.at("position");
+  if (pos[0] != 0 or pos[1] != 0 or pos[2] != 0) {
+    obj = Transformation::Translation(obj, pos[0], pos[1], pos[2]);
+  }
+
+  return obj;
+}
+
+BaseObject* Scene::read_prism(nlohmann::json& descr) {
+  ColData col = read_col_data(descr.at("color"));
+  float ind = descr.at("index");
+
+  BaseObject* obj = Composites::Prism(col, ind);
+
+  std::array<double, 3> pos = descr.at("position");
+  if (pos[0] != 0 or pos[1] != 0 or pos[2] != 0) {
+    obj = Transformation::Translation(obj, pos[0], pos[1], pos[2]);
+  }
+
+  return obj;
+}
+
+BaseObject* Scene::read_triforce(nlohmann::json& descr) {
+  ColData col = read_col_data(descr.at("color"));
+  float ind = descr.at("index");
+
+  BaseObject* obj = Composites::Triforce(col, ind);
+
+  std::array<double, 3> pos = descr.at("position");
+  if (pos[0] != 0 or pos[1] != 0 or pos[2] != 0) {
+    obj = Transformation::Translation(obj, pos[0], pos[1], pos[2]);
+  }
+
+  return obj;
+}
 
 Scene Scene::read_parameters(std::istream& input) {
   json data = json::parse(input);
