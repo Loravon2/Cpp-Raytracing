@@ -1,12 +1,12 @@
 #include <composite.hpp>
 
 BaseObject* Composites::Cube(ColData col, float index){
-  HalfSpace* right = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
-  HalfSpace* up = new HalfSpace(col, index, Eigen::Vector4f(0, 1, 0, 0));
-  HalfSpace* front = new HalfSpace(col, index, Eigen::Vector4f(0, 0, 1, 0));
-  HalfSpace* back = new HalfSpace(col, index, Eigen::Vector4f(0, 0, -1, 0));
-  HalfSpace* down = new HalfSpace(col, index, Eigen::Vector4f(0, -1, 0, 0));
-  HalfSpace* left = new HalfSpace(col, index, Eigen::Vector4f(-1, 0, 0, 0));
+  HalfSpace* right = new HalfSpace(col, index, Eigen::Vector4d(1, 0, 0, 0));
+  HalfSpace* up = new HalfSpace(col, index, Eigen::Vector4d(0, 1, 0, 0));
+  HalfSpace* front = new HalfSpace(col, index, Eigen::Vector4d(0, 0, 1, 0));
+  HalfSpace* back = new HalfSpace(col, index, Eigen::Vector4d(0, 0, -1, 0));
+  HalfSpace* down = new HalfSpace(col, index, Eigen::Vector4d(0, -1, 0, 0));
+  HalfSpace* left = new HalfSpace(col, index, Eigen::Vector4d(-1, 0, 0, 0));
 
   Transformation* right_trans = Transformation::Translation(right, 0.5, 0, 0);
   Transformation* up_trans = Transformation::Translation(up, 0, 0.5, 0);
@@ -22,8 +22,8 @@ BaseObject* Composites::Cube(ColData col, float index){
 
 BaseObject* Composites::Cube_Pattern(ColData col, float index){
   BaseObject* cube = Composites::Cube(col, index);
-  HalfSpace* diag1 = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
-  HalfSpace* diag2 = new HalfSpace(col, index, Eigen::Vector4f(-1, 0, 0, 0));
+  HalfSpace* diag1 = new HalfSpace(col, index, Eigen::Vector4d(1, 0, 0, 0));
+  HalfSpace* diag2 = new HalfSpace(col, index, Eigen::Vector4d(-1, 0, 0, 0));
   
   Transformation* diag1Trans = Transformation::Rotation_Z(diag1, -M_PI_4);
   Transformation* diag2Trans = Transformation::Rotation_Z(diag2, M_PI_4);
@@ -36,7 +36,7 @@ BaseObject* Composites::Cube_Pattern(ColData col, float index){
 BaseObject* Composites::Triangle_Isosceles(ColData col, float index){
   BaseObject* cube1 = Composites::Cube(col, index);
   Transformation* cubetrans = Transformation::Rotation_Z(cube1, M_PI_4);
-  HalfSpace* diag = new HalfSpace(col, index, Eigen::Vector4f(0, 1, 0, 0));
+  HalfSpace* diag = new HalfSpace(col, index, Eigen::Vector4d(0, 1, 0, 0));
   
   Subtraction* tri = new Subtraction({cubetrans, diag});
   return tri;
@@ -45,8 +45,8 @@ BaseObject* Composites::Triangle_Isosceles(ColData col, float index){
 //Dont know about this one. doesnt really work how i imagined it (i think?)
 BaseObject* Composites::Triangle_Equilateral(ColData col, float index){
   BaseObject* cube = Composites::Cube(col, index);
-  HalfSpace* diag1 = new HalfSpace(col, index, Eigen::Vector4f(1, 0, 0, 0));
-  HalfSpace* diag2 = new HalfSpace(col, index, Eigen::Vector4f(-1, 0, 0, 0));
+  HalfSpace* diag1 = new HalfSpace(col, index, Eigen::Vector4d(1, 0, 0, 0));
+  HalfSpace* diag2 = new HalfSpace(col, index, Eigen::Vector4d(-1, 0, 0, 0));
   
   Transformation* diag1Trans = Transformation::Rotation_Z(diag1, -M_PI_4);
   Transformation* diag2Trans = Transformation::Rotation_Z(diag2, M_PI_4);
