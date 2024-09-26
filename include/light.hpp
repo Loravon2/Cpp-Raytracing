@@ -15,14 +15,23 @@ public:
   LightIntensity(float red, float green, float blue);
   LightIntensity();
 
-  static LightIntensity white();
-  static LightIntensity red();
-  static LightIntensity blue();
-  static LightIntensity green();
-  static LightIntensity black();
-  static LightIntensity purple();
-  static LightIntensity gold();
-  static LightIntensity dark_purple();
+  inline static LightIntensity black();
+  inline static LightIntensity silver();
+  inline static LightIntensity gray();
+  inline static LightIntensity white();
+  inline static LightIntensity maroon();
+  inline static LightIntensity red();
+  inline static LightIntensity purple();
+  inline static LightIntensity fuchsia();
+  inline static LightIntensity green();
+  inline static LightIntensity lime();
+  inline static LightIntensity olive();
+  inline static LightIntensity yellow();
+  inline static LightIntensity navy();
+  inline static LightIntensity blue();
+  inline static LightIntensity teal();
+  inline static LightIntensity aqua();
+  inline static LightIntensity gold();
 
   float at(unsigned k);
 
@@ -49,18 +58,6 @@ struct ColData {
 
   ColData(LightIntensity ambient, LightIntensity diffuse, LightIntensity specular, LightIntensity reflected, LightIntensity refracted, float shininess);
   ColData();
-
-  static ColData shiny();
-  static ColData red_flat();
-  static ColData reflective_black();
-  static ColData mirror();
-  static ColData mirror_blue();
-  static ColData mirror_green();
-  static ColData mirror_purple();
-  static ColData gold_flat();
-  static ColData dark_purple_flat();
-  static ColData white_flat();
-  static ColData my_back_wall();
 };
 
 class LightSource {
