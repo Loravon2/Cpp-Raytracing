@@ -7,26 +7,26 @@
 
 class Ray {
 private:
-  Eigen::Vector4f S;
-  Eigen::Vector4f d;
+  Eigen::Vector4d S;
+  Eigen::Vector4d d;
   float n;
 public:
-  Ray(Eigen::Vector3f S, Eigen::Vector3f d, float n);
-  Ray(Eigen::Vector4f S, Eigen::Vector4f d, float n);
-  Ray(float sx, float sy, float sz, float dx, float dy, float dz, float n);
+  Ray(Eigen::Vector3d S, Eigen::Vector3d d, float n);
+  Ray(Eigen::Vector4d S, Eigen::Vector4d d, float n);
+  Ray(double sx, double sy, double sz, double dx, double dy, double dz, float n);
   Ray();
 
-  const Eigen::Vector4f& start_point() const;
-  const Eigen::Vector4f& direction() const;
+  const Eigen::Vector4d& start_point() const;
+  const Eigen::Vector4d& direction() const;
   float index() const;
 
-  const Ray reflect(const Eigen::Vector4f& P, Eigen::Vector4f normal) const;
-  const Ray reflect(const Eigen::Vector3f& P, const Eigen::Vector3f& normal) const;
+  const Ray reflect(const Eigen::Vector4d& P, Eigen::Vector4d normal) const;
+  const Ray reflect(const Eigen::Vector3d& P, const Eigen::Vector3d& normal) const;
 
-  const Ray refract(const Eigen::Vector4f& P, Eigen::Vector4f normal, float n2) const;
-  const Ray refract(const Eigen::Vector3f& P, const Eigen::Vector3f& normal, float n2) const;
+  const Ray refract(const Eigen::Vector4d& P, Eigen::Vector4d normal, float n2) const;
+  const Ray refract(const Eigen::Vector3d& P, const Eigen::Vector3d& normal, float n2) const;
 
   const Ray operator-() const;
 };
 
-const Ray operator*(const Eigen::Transform<float, 3, Eigen::Projective>& T, const Ray& r);
+const Ray operator*(const Eigen::Transform<double, 3, Eigen::Projective>& T, const Ray& r);

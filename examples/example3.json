@@ -1,0 +1,43 @@
+{
+  "screen": {
+      "dpi": 128,
+      "dimensions": [2, 4],
+      "position": [-1, -2, -10],
+      "observer": [0, 0, -20]
+  },
+
+  "medium": {
+      "ambient": [0.1, 0.1, 0.1],
+      "index": 1,
+      "recursion": 1
+  },
+
+  "sources": [
+      {
+          "position": [0, 0, -20],
+          "intensity": [1, 1, 1]
+      },
+      {
+          "position": [0, -3, -2],
+          "intensity": [0, 0, 1]
+      }
+  ],
+  
+  "objects": [
+      {"cylinder": {
+          "position": [0, 0, 0],
+          "radius": 2,
+          "axis": [1, 1, 0],
+          "color": {
+              "ambient": [1, 0.5, 0.5],
+              "diffuse": [0.2, 0.1, 0.1],
+              "specular": [1, 0.5, 0.5],
+              "reflected": [1, 0.5, 0.5],
+              "refracted": [0, 0, 0],
+              "shininess": 1
+              },
+          "index": 1
+          }
+      }
+  ]
+}

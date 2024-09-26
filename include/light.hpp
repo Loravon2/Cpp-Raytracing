@@ -44,16 +44,16 @@ struct ColData {
 
 class LightSource {
 private:
-  Eigen::Vector4f position;
+  Eigen::Vector4d position;
   LightIntensity intensity;
 
 public:
-  LightSource(const Eigen::Vector4f& position, const LightIntensity& intensity);
-  LightSource(const Eigen::Vector3f& position, const LightIntensity& intensity);
+  LightSource(const Eigen::Vector4d& position, const LightIntensity& intensity);
+  LightSource(const Eigen::Vector3d& position, const LightIntensity& intensity);
   LightSource();
 
   ~LightSource();
 
   const LightIntensity& rgb() const;
-  const Eigen::Vector4f& pos() const;
+  const Eigen::Vector4d& pos() const;
 };

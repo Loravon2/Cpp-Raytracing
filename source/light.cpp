@@ -77,7 +77,7 @@ ColData::ColData():
 
 
 LightSource::LightSource(
-  const Eigen::Vector4f& position,
+  const Eigen::Vector4d& position,
   const LightIntensity& intensity
 ): position(position), intensity(intensity)
 {
@@ -85,12 +85,12 @@ LightSource::LightSource(
 }
 
 LightSource::LightSource(
-  const Eigen::Vector3f& position,
+  const Eigen::Vector3d& position,
   const LightIntensity& intensity
-): LightSource((Eigen::Vector4f) position.homogeneous(), intensity) 
+): LightSource((Eigen::Vector4d) position.homogeneous(), intensity) 
 {}
 
-LightSource::LightSource(): LightSource((Eigen::Vector3f) Eigen::Vector3f::Zero(), {0, 0, 0}) {}
+LightSource::LightSource(): LightSource((Eigen::Vector3d) Eigen::Vector3d::Zero(), {0, 0, 0}) {}
 
 LightSource::~LightSource() {
   #ifdef DEBUG
@@ -102,6 +102,6 @@ const LightIntensity& LightSource::rgb() const {
   return intensity;
 }
 
-const Eigen::Vector4f& LightSource::pos() const {
+const Eigen::Vector4d& LightSource::pos() const {
   return position;
 }

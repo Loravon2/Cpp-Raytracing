@@ -4,9 +4,9 @@
 // #define DEBUG
 
 #define HAVE_OPENCV_IMGCODECS 
-#define EPSILON 0.0001
+#define EPSILON 0.00001
 #define NUM_COL 3
 
-#define NUM_EXAMPLES 2
+#define NUM_EXAMPLES 3
 
 #define BAR_WIDTH 70
