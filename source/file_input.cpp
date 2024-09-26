@@ -7,13 +7,27 @@ const std::map<std::string, Scene::action_t> Scene::action_handler = {
   {"cylinder", &Scene::read_cylinder},          {"scaling", &Scene::read_scaling},            
   {"rotation", &Scene::read_rotation},          {"translation", &Scene::read_translation},    
   {"union", &Scene::read_union},                {"intersection", &Scene::read_intersection},
-  {"exclusion", &Scene::read_exclusion},        {"subtraction", &Scene::read_subtraction}
+  {"exclusion", &Scene::read_exclusion},        {"subtraction", &Scene::read_subtraction},
+  {"cube", &Scene::read_cube},                  {"prism", &Scene::read_prism},
+  {"triforce", &Scene::read_triforce}
 };
 
 const std::array<Scene::rotation_t, 3> Scene::rotation_handler = {
   &Transformation::Rotation_X,
   &Transformation::Rotation_Y,
   &Transformation::Rotation_Z
+};
+
+const std::map<std::string, LightIntensity> Scene::color_handler = {
+  {"black", LightIntensity::black()},           {"silver", LightIntensity::silver()},
+  {"gray", LightIntensity::gray()},             {"white", LightIntensity::white()},
+  {"maroon", LightIntensity::maroon()},         {"red", LightIntensity::red()},
+  {"purple", LightIntensity::purple()},         {"fuchsia", LightIntensity::fuchsia()},
+  {"green", LightIntensity::green()},           {"lime", LightIntensity::lime()},
+  {"olive", LightIntensity::olive()},           {"yellow", LightIntensity::yellow()},
+  {"navy", LightIntensity::navy()},             {"blue", LightIntensity::blue()},
+  {"teal", LightIntensity::teal()},             {"aqua", LightIntensity::aqua()},
+  {"gold", LightIntensity::gold()}
 };
 
 
@@ -28,12 +42,26 @@ LightSource* Scene::read_source(nlohmann::json& descr) {
   return source;
 }
 
+LightIntensity Scene::read_color(nlohmann::json& descr) {
+  try {
+    if (descr.is_array()) {
+      return LightIntensity(descr);  
+    }
+
+    return color_handler.at(descr);
+  }
+  catch (json::type_error&) {
+    std::cout << "WARNING : Could not parse color correctly: " << descr << ".\nDefaulting to black." << std::endl;
+    return LightIntensity(0, 0, 0);
+  }
+}
+
 ColData Scene::read_col_data(nlohmann::json& descr) {
-  LightIntensity amb(descr.at("ambient"));
-  LightIntensity diff(descr.at("diffuse"));
-  LightIntensity spec(descr.at("specular"));
-  LightIntensity refl(descr.at("reflected"));
-  LightIntensity refr(descr.at("refracted"));
+  LightIntensity amb = read_color(descr.at("ambient"));
+  LightIntensity diff = read_color(descr.at("diffuse"));
+  LightIntensity spec = read_color(descr.at("specular"));
+  LightIntensity refl = read_color(descr.at("reflected"));
+  LightIntensity refr = read_color(descr.at("refracted"));
   float shiny = descr.at("shininess");
 
   return ColData(amb, diff, spec, refl, refr, shiny);
@@ -120,7 +148,7 @@ BaseObject* Scene::read_cylinder(nlohmann::json& descr) {
 BaseObject* Scene::read_scaling(nlohmann::json& descr) {
   std::array<double, 3> fac = descr.at("factors");
 
-  auto j = descr["subject"].begin();
+  auto j = descr.at("subject").begin();
   BaseObject* subj = action_handler.at(j.key())(j.value());
 
   BaseObject* obj = Transformation::Scaling(subj, fac[0], fac[1], fac[2]);
@@ -129,10 +157,10 @@ BaseObject* Scene::read_scaling(nlohmann::json& descr) {
 }
 
 BaseObject* Scene::read_rotation(nlohmann::json& descr) {
-  double ang = descr["angle"].get<double>() / 180.0 * M_PI;
-  unsigned dir = descr["direction"];
+  double ang = descr.at("angle").get<double>() / 180.0 * M_PI;
+  unsigned dir = descr.at("direction");
 
-  auto j = descr["subject"].begin();
+  auto j = descr.at("subject").begin();
   BaseObject* subj = action_handler.at(j.key())(j.value());
 
   BaseObject* obj = rotation_handler.at(dir)(subj, ang);
@@ -143,7 +171,7 @@ BaseObject* Scene::read_rotation(nlohmann::json& descr) {
 BaseObject* Scene::read_translation(nlohmann::json& descr) {
   std::array<double, 3> fac = descr.at("factors");
 
-  auto j = descr["subject"].begin();
+  auto j = descr.at("subject").begin();
   BaseObject* subj = action_handler.at(j.key())(j.value());
 
   BaseObject* obj = Transformation::Translation(subj, fac[0], fac[1], fac[2]);
@@ -183,6 +211,52 @@ BaseObject* Scene::read_subtraction(nlohmann::json& descr) {
   return obj;
 }
 
+BaseObject* Scene::read_cube(nlohmann::json& descr) {
+  ColData col = read_col_data(descr.at("color"));
+  float ind = descr.at("index");
+
+  BaseObject* obj = Composites::Cube(col, ind);
+
+  std::array<double, 3> dim = descr.at("dimensions");
+  if (dim[0] != 0 or dim[1] != 0 or dim[2] != 0) {
+    obj = Transformation::Scaling(obj, dim[0], dim[1], dim[2]);
+  }
+
+  std::array<double, 3> pos = descr.at("position");
+  if (pos[0] != 0 or pos[1] != 0 or pos[2] != 0) {
+    obj = Transformation::Translation(obj, pos[0], pos[1], pos[2]);
+  }
+
+  return obj;
+}
+
+BaseObject* Scene::read_prism(nlohmann::json& descr) {
+  ColData col = read_col_data(descr.at("color"));
+  float ind = descr.at("index");
+
+  BaseObject* obj = Composites::Prism(col, ind);
+
+  std::array<double, 3> pos = descr.at("position");
+  if (pos[0] != 0 or pos[1] != 0 or pos[2] != 0) {
+    obj = Transformation::Translation(obj, pos[0], pos[1], pos[2]);
+  }
+
+  return obj;
+}
+
+BaseObject* Scene::read_triforce(nlohmann::json& descr) {
+  ColData col = read_col_data(descr.at("color"));
+  float ind = descr.at("index");
+
+  BaseObject* obj = Composites::Triforce(col, ind);
+
+  std::array<double, 3> pos = descr.at("position");
+  if (pos[0] != 0 or pos[1] != 0 or pos[2] != 0) {
+    obj = Transformation::Translation(obj, pos[0], pos[1], pos[2]);
+  }
+
+  return obj;
+}
 
 Scene Scene::read_parameters(std::istream& input) {
   json data = json::parse(input);

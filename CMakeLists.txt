@@ -34,7 +34,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(OpenCV Eigen3 nlohmann_json)
 
 
-add_executable(main main.cpp ${SRC_DIR}/file_input.cpp ${SRC_DIR}/light.cpp ${SRC_DIR}/objects.cpp ${SRC_DIR}/ray.cpp ${SRC_DIR}/scene.cpp)
+add_executable(main main.cpp ${SRC_DIR}/composite.cpp ${SRC_DIR}/file_input.cpp ${SRC_DIR}/light.cpp ${SRC_DIR}/objects.cpp ${SRC_DIR}/ray.cpp ${SRC_DIR}/scene.cpp)
 
 
 target_include_directories(main PUBLIC

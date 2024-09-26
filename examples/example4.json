@@ -1,0 +1,47 @@
+{
+  "screen": {
+      "dpi": 128,
+      "dimensions": [2, 4],
+      "position": [-1, -2, -10],
+      "observer": [0, 0, -20]
+  },
+
+  "medium": {
+      "ambient": [0.1, 0.1, 0.1],
+      "index": 1,
+      "recursion": 1
+  },
+
+  "sources": [
+      {
+          "position": [0, 0, -20],
+          "intensity": [1, 1, 1]
+      },
+      {
+          "position": [0, -3, -2],
+          "intensity": [0, 0, 1]
+      }
+  ],
+  
+  "objects": [
+      {"rotation": {
+          "angle": 10,
+          "direction": 0,
+          "subject": {
+              "triforce": {
+                  "position": [0, 0, 0],
+                  "color": {
+                      "ambient": "gold",
+                      "diffuse": "gold",
+                      "specular": "gold",
+                      "reflected": "gold",
+                      "refracted": "gold",
+                      "shininess": 1
+                      },
+                  "index": 1
+                  }
+              }
+          }
+      }
+  ]
+}

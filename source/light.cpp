@@ -9,11 +9,9 @@ LightIntensity::LightIntensity(std::array<float, NUM_COL> rgb): rgb(rgb) {
 LightIntensity::LightIntensity(float red, float green, float blue): LightIntensity(std::array<float, NUM_COL>{red, green, blue}) {}
 LightIntensity::LightIntensity(): LightIntensity(0, 0, 0) {}
 
-
 float LightIntensity::at(unsigned k) {
   return rgb.at(k);
 }
-
 
 void LightIntensity::operator+=(const LightIntensity& other) {
   for (unsigned i = 0; i < NUM_COL; i++) {
@@ -73,7 +71,6 @@ ColData::ColData(
 ColData::ColData():
   ColData(LightIntensity(), LightIntensity(), LightIntensity(), LightIntensity(), LightIntensity(), 0.0)
   {}
-
 
 
 LightSource::LightSource(
