@@ -46,9 +46,15 @@ include_directories(${INC_DIR}
 file(GLOB sourceFiles CONFIGURE_DEPENDS ${SRC_DIR}/*.cpp)
 add_library(Cpp-Raytracing ${sourceFiles})
 
+
 add_executable(Cpp-Raytracing.exe main.cpp)
 
 target_link_libraries(Cpp-Raytracing.exe 
                       opencv_core
                       opencv_imgcodecs
                       Cpp-Raytracing)
+
+
+add_custom_target(run
+                  COMMAND Cpp-Raytracing.exe
+                  DEPENDS Cpp-Raytracing.exe)
