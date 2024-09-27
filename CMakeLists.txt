@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
+set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(DEF_DIR ${CMAKE_CURRENT_SOURCE_DIR}/defines)
 
 
 find_package(OpenCV 4 REQUIRED)
@@ -34,16 +36,19 @@ if (NOT nlohmann_json_FOUND)
   FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
-add_executable(main main.cpp ${SRC_DIR}/composite.cpp ${SRC_DIR}/file_input.cpp ${SRC_DIR}/light.cpp ${SRC_DIR}/objects.cpp ${SRC_DIR}/ray.cpp ${SRC_DIR}/scene.cpp)
 
+include_directories(${INC_DIR}
+                    ${DEF_DIR}
+                    ${OpenCV_INCLUDE_DIRS}
+                    ${Eigen3_SOURCE_DIR}/Eigen
+                    ${nlohmann_json_SOURCE_DIR}/single_include/nlohmann)
 
-target_include_directories(main PUBLIC
-                           ${CMAKE_CURRENT_SOURCE_DIR}/include
-                           ${CMAKE_CURRENT_SOURCE_DIR}/defines
-                           ${OpenCV_SOURCE_DIR}
-                           ${Eigen3_SOURCE_DIR}/Eigen
-                           ${nlohmann_json_SOURCE_DIR}/single_include/nlohmann)
+file(GLOB sourceFiles CONFIGURE_DEPENDS ${SRC_DIR}/*.cpp)
+add_library(Cpp-Raytracing ${sourceFiles})
 
-target_link_libraries(main 
+add_executable(Cpp-Raytracing.exe main.cpp)
+
+target_link_libraries(Cpp-Raytracing.exe 
                       opencv_core
-                      opencv_imgcodecs)
+                      opencv_imgcodecs
+                      Cpp-Raytracing)
