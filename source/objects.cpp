@@ -143,7 +143,14 @@ HalfSpace::HalfSpace():
 bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
   Ray modified = inverse_transform * r;
   
-  if (normal.dot(modified.direction()) == 0) return false;
+  if (normal.dot(modified.direction()) == 0) {
+    if (normal.dot(modified.start_point()) == 0) { // does the start point lie in the half-space?
+      dest.push_back(IntersectionPoint(modified.start_point(), normal, col, index, 0, false));
+      return true;
+    }
+
+    return false;
+  };
 
   double t = normal.dot(Eigen::Vector3d::Zero().homogeneous() - modified.start_point()) / normal.dot(modified.direction());
   

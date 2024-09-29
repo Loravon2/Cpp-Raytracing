@@ -62,8 +62,6 @@ private:
 
   std::vector<LightSource*> sources;
   RootObject* objects;
-
-  LightIntensity trace_ray(const Ray& ray, unsigned depth);
   
 public:
   static Scene read_parameters(std::istream& input);
@@ -77,5 +75,6 @@ public:
 
   ~Scene();
 
+  LightIntensity trace_ray(const Ray& ray, unsigned depth);
   cv::Mat_<cv::Vec3b> generate();
 };

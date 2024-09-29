@@ -44,7 +44,7 @@ const Ray Ray::refract(const Eigen::Vector4d& P, Eigen::Vector4d normal, float n
   eigen_assert(normal[3] == 0 || normal[3] == -0);
 
   normal.normalize();
-  return Ray(P, n / n2 * (d - (d.dot(normal) + sqrtf((n2 / n) * (n2 / n) + d.dot(normal) * d.dot(normal) - 1)) * normal), n2);
+  return Ray(P, n / n2 * (d + (d.dot(normal) - sqrtf64((n2 / n) * (n2 / n) + d.dot(normal) * d.dot(normal) - 1)) * normal), n2);
 }
 
 const Ray Ray::refract(const Eigen::Vector3d& P, const Eigen::Vector3d& normal, float n2) const {

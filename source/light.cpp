@@ -91,7 +91,7 @@ LightSource::LightSource(): LightSource((Eigen::Vector3d) Eigen::Vector3d::Zero(
 
 LightSource::~LightSource() {
   #ifdef DEBUG
-    std::cout << "\nDestructing Light Source at " << this << std::endl;
+    std::cout << "Destructing Light Source at " << this << std::endl;
   #endif
 }
 
