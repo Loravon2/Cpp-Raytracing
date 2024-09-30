@@ -58,5 +58,11 @@ int main() {
   CUSTOM_ASSERT(abs(li4.at(1) - 0.25) < EPSILON);
   CUSTOM_ASSERT(abs(li4.at(2) - 0) < EPSILON);
 
+  LightSource ls1(Eigen::Vector3d(0, 1, 0), LightIntensity::black());
+  CUSTOM_ASSERT((ls1.pos() - Eigen::Vector4d(0, 1, 0, 1)).norm() < EPSILON);
+  CUSTOM_ASSERT(abs(ls1.rgb().at(0) - 0) < EPSILON);
+  CUSTOM_ASSERT(abs(ls1.rgb().at(1) - 0) < EPSILON);
+  CUSTOM_ASSERT(abs(ls1.rgb().at(2) - 0) < EPSILON);
+
   return 0;
 }

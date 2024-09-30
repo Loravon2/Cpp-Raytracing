@@ -67,7 +67,7 @@ public:
     return LightIntensity(170.0 / 255.0, 127.0 / 255.0, 46.0 / 255.0);
   }
 
-  float at(unsigned k);
+  const float& at(unsigned k) const;
 
   void operator+=(const LightIntensity& other);
   friend const LightIntensity operator+(LightIntensity l1, const LightIntensity& l2);
