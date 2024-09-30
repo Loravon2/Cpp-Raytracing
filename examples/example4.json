@@ -9,7 +9,7 @@
   "medium": {
       "ambient": [0.1, 0.1, 0.1],
       "index": 1,
-      "recursion": 5
+      "recursion": 3
   },
 
   "sources": [
