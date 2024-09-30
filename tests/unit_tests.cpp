@@ -31,8 +31,8 @@ int main() {
   CUSTOM_ASSERT((r4.start_point() - Eigen::Vector4d(0, 0, 0, 1)).norm() < EPSILON);
   CUSTOM_ASSERT((r4.direction() - Eigen::Vector4d(-1, 0, 0, 0)).norm() < EPSILON);
 
-  Eigen::Transform<double, 3, Eigen::Projective> transform = Eigen::Transform<double, 3, Eigen::Projective> (Eigen::Translation<double, 3>(0, -2, 0));
-  Ray r5 = transform * Ray(Eigen::Vector4d(1, 0, 0, 1), Eigen::Vector4d(0, 1, 0, 0), 1.5);
+  Eigen::Transform<double, 3, Eigen::Projective> transform1 = Eigen::Transform<double, 3, Eigen::Projective> (Eigen::Translation<double, 3>(0, -2, 0));
+  Ray r5 = transform1 * Ray(Eigen::Vector4d(1, 0, 0, 1), Eigen::Vector4d(0, 1, 0, 0), 1.5);
   CUSTOM_ASSERT(abs(r5.index() - 1.5) < EPSILON);
   CUSTOM_ASSERT((r5.start_point() - Eigen::Vector4d(1, -2, 0, 1)).norm() < EPSILON);
   CUSTOM_ASSERT((r5.direction() - Eigen::Vector4d(0, 1, 0, 0)).norm() < EPSILON);
@@ -63,6 +63,20 @@ int main() {
   CUSTOM_ASSERT(abs(ls1.rgb().at(0) - 0) < EPSILON);
   CUSTOM_ASSERT(abs(ls1.rgb().at(1) - 0) < EPSILON);
   CUSTOM_ASSERT(abs(ls1.rgb().at(2) - 0) < EPSILON);
+
+  // intersection point tests
+  IntersectionPoint ip1(Eigen::Vector3d(1, 0, 2), Eigen::Vector3d(1, 1, 1), ColData(), 2.3, 12.4, true);
+  CUSTOM_ASSERT((ip1.point - Eigen::Vector4d(1, 0, 2, 1)).norm() < EPSILON);
+  CUSTOM_ASSERT((ip1.normal - Eigen::Vector4d(1 / sqrtf64(3), 1 / sqrtf64(3), 1 / sqrtf64(3), 0)).norm() < EPSILON);
+
+  IntersectionPoint ip2(Eigen::Vector4d(2, 3, 4, 1), Eigen::Vector4d(1, 2, 3, 0), ColData(), 1, 10, false);
+  CUSTOM_ASSERT((ip2.normal - Eigen::Vector4d(1.0 / sqrtf64(14), 2.0 / sqrtf64(14), 3.0 / sqrtf64(14), 0)).norm() < EPSILON);
+  CUSTOM_ASSERT(ip2 < ip1);
+
+  Eigen::Transform<double, 3, Eigen::Projective> transform2 = Eigen::Transform<double, 3, Eigen::Projective> (Eigen::DiagonalMatrix<double, 3>(1, 2, 1));
+  IntersectionPoint ip3 = transform2 * IntersectionPoint(Eigen::Vector3d(1, 2, 1), Eigen::Vector3d(1, 0, 0), ColData(), 1.0, 1.0, true);
+  CUSTOM_ASSERT((ip3.point - Eigen::Vector4d(1, 4, 1, 1)).norm() < EPSILON);
+  CUSTOM_ASSERT((ip3.normal - Eigen::Vector4d(1, 0, 0, 0)).norm() < EPSILON);
 
   return 0;
 }
