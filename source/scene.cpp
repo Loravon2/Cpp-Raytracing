@@ -20,10 +20,16 @@ Scene::~Scene() {
   #endif
 
   for (LightSource* source : sources) {
+    if (source == nullptr) {
+      continue;
+    }
+
     delete source;
   }
 
-  delete objects;
+  if (objects != nullptr) {
+    delete objects;
+  }
 }
 
 

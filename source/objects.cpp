@@ -43,7 +43,9 @@ RootObject::~RootObject() {
     std::cout << "Destructing Root Object at " << this << std::endl;
   #endif
 
-  delete child;
+  if (child != nullptr) {
+    delete child;
+  }
 }
 
 bool RootObject::intersect(const Ray& r, IntersectionPoint* dest) const {
@@ -257,7 +259,9 @@ Transformation::~Transformation() {
     std::cout << "Destructing Transformation at " << this << std::endl;
   #endif
   
-  delete child;
+  if(child != nullptr) {
+    delete child;
+  }
 }
 
 bool Transformation::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
@@ -298,6 +302,10 @@ Combination::~Combination() {
   #endif
   
   for (BaseObject* O : objects) {
+    if (O == nullptr) {
+      continue;
+    }
+
     delete O;
   }
 }
