@@ -14,6 +14,37 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 
+# credit to https://vicrucann.github.io/tutorials/quick-cmake-doxygen/
+option(BUILD_DOC "Build documentation" ON)
+
+if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+  find_program(BROWSER_DIR NAMES firefox firefox-developer-edition Firefox Firefox-Developer-Edition chrome Chrome chromium Chromium edge Edge brave Brave opera Opera)
+
+  find_package(Doxygen QUIET)
+  if(DOXYGEN_FOUND)
+    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/resources/Doxyfile.in)
+    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+    message("Doxygen build started")
+
+    add_custom_target(documentation
+                      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                      COMMENT "Generating documentation with Doxygen"
+                      VERBATIM)
+
+    if(NOT BROWSER_DIR EQUAL "BROWSER_DIR-NOTFOUND")
+      add_custom_target(open_doc
+                        COMMAND ${BROWSER_DIR} ${CMAKE_CURRENT_BINARY_DIR}/doc_doxygen/html/index.html
+                        DEPENDS documentation
+                        COMMENT "Opening documentation with ${BROWSER_DIR}")
+    endif(NOT BROWSER_DIR EQUAL "BROWSER_DIR-NOTFOUND")
+  else(DOXYGEN_FOUND)
+    message("Doxygen must be installed to generate the documentation")
+  endif(DOXYGEN_FOUND)
+endif()
+
 option(custom_assert "using custom-defined assert" 1)
 if(custom_assert)
   add_compile_definitions(-DACTIVATE_CUSTOM_ASSERT)

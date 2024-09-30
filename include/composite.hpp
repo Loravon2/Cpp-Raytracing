@@ -5,7 +5,7 @@
 #include <objects.hpp>
 
 /**
- * \class Composites composite.hpp "include/composite.hpp"
+ * \class Composites composite.hpp
  * 
  * \brief Helper class to construct composite objects.
  * 
