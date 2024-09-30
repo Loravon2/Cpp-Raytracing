@@ -12,7 +12,7 @@ Scene::Scene(float dpi, float L_x, float L_y,
 
 Scene::Scene():
   Scene(1, 1, 1, Eigen::Vector4d(-0.5, -0.5, 0, 1), Eigen::Vector4d(0, 0, -1, 1),
-        LightIntensity(), 1.0, 1, {}, nullptr);
+        LightIntensity(), 1.0, 1, {}, nullptr) {}
 
 Scene::~Scene() {
   #ifdef DEBUG
