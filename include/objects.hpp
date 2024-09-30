@@ -8,6 +8,7 @@
 
 #include <ray.hpp>
 #include <light.hpp>
+#include <custom_exceptions.hpp>
 #include "defines.h"
 
 

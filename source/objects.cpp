@@ -1,8 +1,8 @@
 #include <objects.hpp>
 
 IntersectionPoint::IntersectionPoint(Eigen::Vector4d point, Eigen::Vector4d normal, ColData color, float index, double distance, bool inside): point(point), normal(normal.normalized()), color(color), index(index), distance(distance), inside(inside) {
-  eigen_assert(point[3] == 1);
-  eigen_assert(normal[3] == 0);
+  CUSTOM_ASSERT(abs(point[3] - 1) < EPSILON);
+  CUSTOM_ASSERT(abs(normal[3] - 0) < EPSILON);
 }
 
 IntersectionPoint::IntersectionPoint(Eigen::Vector3d point, Eigen::Vector3d normal, ColData color, float index, double distance, bool inside): IntersectionPoint((Eigen::Vector4d) point.homogeneous(), normal.homogeneous() - Eigen::Vector4d::UnitW(), color, index, distance, inside) {}
@@ -132,7 +132,7 @@ bool Sphere::included(const Eigen::Vector4d& point, const Eigen::Transform<doubl
 HalfSpace::HalfSpace(ColData col, float index, Eigen::Vector4d normal):
   Primitive(col, index), normal(normal)
   {
-    eigen_assert(this->normal[3] == 0);
+    CUSTOM_ASSERT(abs(this->normal[3] - 0) < EPSILON);
     this->normal.normalize();
   }
 

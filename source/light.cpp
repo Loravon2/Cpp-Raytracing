@@ -78,7 +78,7 @@ LightSource::LightSource(
   const LightIntensity& intensity
 ): position(position), intensity(intensity)
 {
-  eigen_assert(position[3] == 1);
+  CUSTOM_ASSERT(abs(position[3] - 1) < EPSILON);
 }
 
 LightSource::LightSource(

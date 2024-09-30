@@ -4,6 +4,7 @@
 #include <array>
 #include <Dense>
 
+#include <custom_exceptions.hpp>
 #include "defines.h"
 
 class LightIntensity {
