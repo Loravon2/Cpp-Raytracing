@@ -1,16 +1,54 @@
 # Cpp-Raytracing
-## Kompilieren
-Das Kompilieren findet jetzt mit Cmake statt mit einem makefile statt. Das ist super, weil ihr dadurch (fast) nichts mehr machen und auch die Libraries nicht mehr selber installieren müsst. Die Schritte sind ganz einfach:
-- erst legt ihr einen neuen Ordner "build" an
-- dann bewegt ihr euch mit "cd build" in den Ordner
-- dort fügt ihr den Befehl "cmake .." aus. Jetzt entsteht in diesem Ordner ein makefile
-- dieser kann nun so wie bekannt mit "make" ausgeführt werden um die executable main (bei mir ohne Dateiendung, könnte sich aber unterscheiden) zu erstellen
-- ein erneutes ausführen von "cmake .." ist nur nötig, wenn neue Dateien / Bibliotheken hinzugefügt werden. (Diese müssen dann aber auch in CMakeLists.txt erfasst werden). Eine einfache Änderung des Inhalts kann wie bekannt mit "make" kompiliert werden.
-## Voraussetzungen
-Bitte als aller erstes die gesamte [Erläuterung](https://collaborating.tuhh.de/e-10/teaching/oop/lecture/-/blob/master/5_project/general/README.md#theoretical-description) zum Projekt und insbesondere die sechs technischen [Parts](https://collaborating.tuhh.de/e-10/teaching/oop/lecture/-/blob/master/5_project/general/part1.md) aufmerksam lesen und durcharbeiten!
-## Entwicklung
-Ich schlage vor, dass wir übergeordnete Issues zu den einzelnen großen Features machen, zu denen wir uns selbstständig zuordnen können (und eventuell durch untergeordnete Issues ergänzen zur besseren Planung falls Bedarf). Bitte stets erst einen Plan machen (ja, auch **vollständige** UML-Diagramme, die brauchen wir für die Dokumentation) und dann implementieren.
+## Navigation
+- [Generating Code Documentation](markdowns/documentation.md)
+- [UML-Class diagram](resources/uml_class_diagram.pdf)
+- [Automated Code Tests](markdowns/tests.md)
+- [Implemented Features](markdowns/features.md)
+- [Example inputs](markdowns/examples.md)
+- [Writing your own input](markdowns/file_input.md)
+- [Debug Mode](markdowns/debug.md)
+## Prerequisites
+For installing, compiling and running Cpp-Raytracing, there are some prerequisites.
+Required are:
+- `cmake` with at least version 3.14
+- `OpenCV4`
 
-Ich fände es zudem praktisch, wenn für jedes Feature einen Branch machen und nach Abschluss mit einem Pull Request auf den main branch holen. Dadurch kann jeder den Überblick über den Zustand des Projekts behalten und Fehler schleichen sich nicht so leicht ein.
+Optional dependencies are:
+- `Eigen3` - if not found, it will be automatically installed and built in the project directory
+- `nlohmann_json`- if not found, it will be automatically installed and built in the project directory
+- `Doxygen` is necessary to generate the html Doc-String with code documentation
+- Some standard web browser (firefox, chrome, chromium) is required to open the generated Doc-String via cmake
+## Compilation
+After cloning Cpp-Raytracing, you should create a build directory inside the projects directory.
+```
+cd Cpp-Raytracing
+mkdir build 
+```
+Then navigate into the build directory and call cmake on the parent directory like this:
+```
+cd build
+cmake ..
+```
+This will check for dependencies, fetch possible missing libraries from GitHub (**not** opencv) and create a comprehensive makefile. 
+Alternatively you can build the program in [debug mode](markdowns/debug.md).
 
-Danke fürs Lesen ;D
+Now you can compile the program simply by typing make inside the build directory:
+```
+make
+```
+## Running the program
+Once successfully compiled, you can find `Cpp-Raytracing.exe` inside the build directory. Run it with
+```
+./Cpp-Raytracing.exe
+```
+The program needs a [scene description](markdowns/file_input.md) to function. 
+You can either create your own, or use one of our example scenes. 
+For the first, please put it into a file and, when prompted, give the program its path relative to the projects top directory. That means, if you put `input.json` into the Cpp-Raytracing directory, you can just type
+```
+input.json
+```
+into the console, once the program asks you for the file.
+
+If you want to use one of the examples, just type the examples number, when the program asks you. For some details regarding the examples, see [examples.md](markdowns/examples.md).
+
+Once the image generation is finished, you can find the `output.png` in the build directory.

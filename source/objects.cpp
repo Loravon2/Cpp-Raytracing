@@ -1,8 +1,8 @@
 #include <objects.hpp>
 
 IntersectionPoint::IntersectionPoint(Eigen::Vector4d point, Eigen::Vector4d normal, ColData color, float index, double distance, bool inside): point(point), normal(normal.normalized()), color(color), index(index), distance(distance), inside(inside) {
-  eigen_assert(point[3] == 1);
-  eigen_assert(normal[3] == 0);
+  CUSTOM_ASSERT(abs(point[3] - 1) < EPSILON);
+  CUSTOM_ASSERT(abs(normal[3] - 0) < EPSILON);
 }
 
 IntersectionPoint::IntersectionPoint(Eigen::Vector3d point, Eigen::Vector3d normal, ColData color, float index, double distance, bool inside): IntersectionPoint((Eigen::Vector4d) point.homogeneous(), normal.homogeneous() - Eigen::Vector4d::UnitW(), color, index, distance, inside) {}
@@ -43,7 +43,9 @@ RootObject::~RootObject() {
     std::cout << "Destructing Root Object at " << this << std::endl;
   #endif
 
-  delete child;
+  if (child != nullptr) {
+    delete child;
+  }
 }
 
 bool RootObject::intersect(const Ray& r, IntersectionPoint* dest) const {
@@ -132,7 +134,7 @@ bool Sphere::included(const Eigen::Vector4d& point, const Eigen::Transform<doubl
 HalfSpace::HalfSpace(ColData col, float index, Eigen::Vector4d normal):
   Primitive(col, index), normal(normal)
   {
-    eigen_assert(this->normal[3] == 0);
+    CUSTOM_ASSERT(abs(this->normal[3] - 0) < EPSILON);
     this->normal.normalize();
   }
 
@@ -143,7 +145,14 @@ HalfSpace::HalfSpace():
 bool HalfSpace::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
   Ray modified = inverse_transform * r;
   
-  if (normal.dot(modified.direction()) == 0) return false;
+  if (normal.dot(modified.direction()) == 0) {
+    if (normal.dot(modified.start_point()) == 0) { // does the start point lie in the half-space?
+      dest.push_back(IntersectionPoint(modified.start_point(), normal, col, index, 0, false));
+      return true;
+    }
+
+    return false;
+  };
 
   double t = normal.dot(Eigen::Vector3d::Zero().homogeneous() - modified.start_point()) / normal.dot(modified.direction());
   
@@ -250,7 +259,9 @@ Transformation::~Transformation() {
     std::cout << "Destructing Transformation at " << this << std::endl;
   #endif
   
-  delete child;
+  if(child != nullptr) {
+    delete child;
+  }
 }
 
 bool Transformation::intersect(const Ray& r, const Eigen::Transform<double, 3, Eigen::Projective>& inverse_transform, std::vector<IntersectionPoint>& dest) const {
@@ -291,6 +302,10 @@ Combination::~Combination() {
   #endif
   
   for (BaseObject* O : objects) {
+    if (O == nullptr) {
+      continue;
+    }
+
     delete O;
   }
 }

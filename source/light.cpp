@@ -9,7 +9,7 @@ LightIntensity::LightIntensity(std::array<float, NUM_COL> rgb): rgb(rgb) {
 LightIntensity::LightIntensity(float red, float green, float blue): LightIntensity(std::array<float, NUM_COL>{red, green, blue}) {}
 LightIntensity::LightIntensity(): LightIntensity(0, 0, 0) {}
 
-float LightIntensity::at(unsigned k) {
+const float& LightIntensity::at(unsigned k) const {
   return rgb.at(k);
 }
 
@@ -78,7 +78,7 @@ LightSource::LightSource(
   const LightIntensity& intensity
 ): position(position), intensity(intensity)
 {
-  eigen_assert(position[3] == 1);
+  CUSTOM_ASSERT(abs(position[3] - 1) < EPSILON);
 }
 
 LightSource::LightSource(
@@ -91,7 +91,7 @@ LightSource::LightSource(): LightSource((Eigen::Vector3d) Eigen::Vector3d::Zero(
 
 LightSource::~LightSource() {
   #ifdef DEBUG
-    std::cout << "\nDestructing Light Source at " << this << std::endl;
+    std::cout << "Destructing Light Source at " << this << std::endl;
   #endif
 }
 

@@ -40,10 +40,12 @@ int main() {
   Scene scene = Scene::read_parameters(inp);
 
   std::cout << "\nThe scene was loaded successfully.\nDepending on size and resolution, the rendering may"
-  " take a while.\nDo you want to continue? (y/N)" << std::endl;
+  " take a while.\n\nDo you want to continue? (y/N): " << std::flush;
 
   char answ;
   std::cin >> answ;
+
+  std::cout << std::endl;
 
   if (answ != 'y' and answ != 'Y') {
     std::cout << "Aborting." << std::endl;

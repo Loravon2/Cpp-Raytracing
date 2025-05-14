@@ -10,16 +10,26 @@ Scene::Scene(float dpi, float L_x, float L_y,
           max_recursion_depth(max_recursion_depth), sources(sources), objects(objects)
           {}
 
+Scene::Scene():
+  Scene(1, 1, 1, Eigen::Vector4d(-0.5, -0.5, 0, 1), Eigen::Vector4d(0, 0, -1, 1),
+        LightIntensity(), 1.0, 1, {}, nullptr) {}
+
 Scene::~Scene() {
   #ifdef DEBUG
     std::cout << "\nDestructing Scene at " << this << std::endl;
   #endif
 
   for (LightSource* source : sources) {
+    if (source == nullptr) {
+      continue;
+    }
+
     delete source;
   }
 
-  delete objects;
+  if (objects != nullptr) {
+    delete objects;
+  }
 }
 
 

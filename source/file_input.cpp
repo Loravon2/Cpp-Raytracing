@@ -31,17 +31,6 @@ const std::map<std::string, LightIntensity> Scene::color_handler = {
 };
 
 
-LightSource* Scene::read_source(nlohmann::json& descr) {
-  std::array<double, 3> raw_pos = descr.at("position");
-  std::array<float, 3> intensity = descr.at("intensity");
-
-  Eigen::Vector3d pos(raw_pos[0], raw_pos[1], raw_pos[2]);
-
-  LightSource* source = new LightSource(pos, LightIntensity(intensity));
-
-  return source;
-}
-
 LightIntensity Scene::read_color(nlohmann::json& descr) {
   try {
     if (descr.is_array()) {
@@ -55,6 +44,18 @@ LightIntensity Scene::read_color(nlohmann::json& descr) {
     return LightIntensity(0, 0, 0);
   }
 }
+
+LightSource* Scene::read_source(nlohmann::json& descr) {
+  std::array<double, 3> raw_pos = descr.at("position");
+  LightIntensity intensity = read_color(descr.at("intensity"));
+
+  Eigen::Vector3d pos(raw_pos[0], raw_pos[1], raw_pos[2]);
+
+  LightSource* source = new LightSource(pos, intensity);
+
+  return source;
+}
+
 
 ColData Scene::read_col_data(nlohmann::json& descr) {
   LightIntensity amb = read_color(descr.at("ambient"));
@@ -268,7 +269,7 @@ Scene Scene::read_parameters(std::istream& input) {
   std::array<float, 3> obs = screen_info.at("observer");
 
   json medium_info = data.at("medium");
-  std::array<float, 3> amb = medium_info.at("ambient");
+  LightIntensity amb = read_color(medium_info.at("ambient"));
   float index = medium_info.at("index");
   unsigned recursion = medium_info.at("recursion");
 
@@ -283,6 +284,6 @@ Scene Scene::read_parameters(std::istream& input) {
 
   return Scene(dpi, dim[0], dim[1], 
                Eigen::Vector4d(pos[0], pos[1], pos[2], 1), Eigen::Vector4d(obs[0], obs[1], obs[2], 1),
-               LightIntensity(amb), index, recursion, sources, root);
+               amb, index, recursion, sources, root);
 }
 

@@ -1,25 +1,21 @@
 {
   "screen": {
-      "dpi": 128,
-      "dimensions": [2, 4],
-      "position": [-1, -2, -10],
+      "dpi": 256,
+      "dimensions": [2, 2],
+      "position": [-1, -1, -10],
       "observer": [0, 0, -20]
   },
 
   "medium": {
       "ambient": [0.1, 0.1, 0.1],
       "index": 1,
-      "recursion": 1
+      "recursion": 3
   },
 
   "sources": [
       {
-          "position": [0, 0, -20],
+          "position": [0, -3, -5],
           "intensity": [1, 1, 1]
-      },
-      {
-          "position": [0, -3, -2],
-          "intensity": [0, 0, 1]
       }
   ],
   
@@ -40,6 +36,20 @@
                       },
                   "index": 1
                   }
+              }
+          }
+      },
+      {"sphere": {
+          "position": [2, 2, -2],
+          "radius": 1,
+          "index": 1,
+          "color": {
+              "ambient": "black",
+              "diffuse": "black",
+              "specular": "red",
+              "reflected": "white",
+              "refracted": "black",
+              "shininess": 4
               }
           }
       }
